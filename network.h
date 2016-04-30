@@ -15,13 +15,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
-
+#include <poll.h>	
 #include <sys/socket.h>
 #include <netinet/ether.h>
 #include <netinet/ip.h>
+#include <netinet/udp.h>
+#include <netinet/tcp.h>
+
 #include <net/if.h>
-#include<stdarg.h>
-#include<stdio.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <netdb.h>
 #include <time.h>
   
@@ -50,4 +53,20 @@ passthrough all packets without querying dnsmap or ggitm.
 
 */
 void capture_loop (struct global_settings global);
+
+void
+get_interface (char *if_name, struct ifreq *ifr, int d);
+
+struct PKT{
+  uint8_t *ethernet_frame;
+  struct iphdr *ipheader;
+  struct udphdr *udpheader;
+  struct tcphdr *tcpheader;
+   uint8_t *data;
+   int mtu;
+   int len;
+   int datalen;
+};
+void trace_dump (char *msg,struct PKT * packet);
+
 #endif

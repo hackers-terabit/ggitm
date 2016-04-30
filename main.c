@@ -14,7 +14,6 @@ main (int argc, char **argv) {
 
 //TODO stuff :| maybe fork() around a bit once af_packet fanout is in effect?
 ifup(&global.interface_in);
-drop_privs();
 capture_loop(global);
 ifdown(&global.interface_in);
 
