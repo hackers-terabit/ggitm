@@ -169,7 +169,7 @@ void capture_loop (struct global_settings global){
                 packetv4->datalen=packetv4->len - (ETHIP4+(4*packetv4->tcpheader->doff));
 
 		l4port=ntohs(packetv4->tcpheader->dest);
-                  if(l4port==80){
+                  if(l4port==global.http_port){
 		   http_packet(packetv4); 
 		    
 		  }else{

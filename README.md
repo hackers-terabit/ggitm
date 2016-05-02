@@ -22,15 +22,19 @@ HTTP TCP session.
 ## FAQ
 
   - Why C?
+  
      Because a) C is fabulous and we(the developers) like it. b) we would like the deployment of this program
      to be as simple as possible,without requiring the admin to interact with iptables or manage interpreter
      versions(if had we used an interpreted language).
      
   - Why transparent?
+  
      Because it's a pain to setup proxies on browsers and some applications are not written with proxy support.
   - IPV6?
+  
      Definetly,but not at this time. 
   - What are modes of operations?
+  
      ggitm has 2 modes of operation, inline and out of line. 
      
      With inline mode, ggitm sits between clients and servers acting as a transparent network bridge device.
