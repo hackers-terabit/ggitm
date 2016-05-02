@@ -170,7 +170,7 @@ void capture_loop (struct global_settings global){
 
 		l4port=ntohs(packetv4->tcpheader->dest);
                   if(l4port==80){
-		   http_dump(packetv4); 
+		   http_packet(packetv4); 
 		    
 		  }else{
 		 //  printf("TCP port %i\n",l4port); 

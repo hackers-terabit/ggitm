@@ -130,7 +130,7 @@ void signal_handler(int signal){
 void print_usage(){
  printf("Usage:\nggitm [-d] [-h] <-i interface> \n"
 	 "-h        Display this help\n"
-         "-d        Enable verbose debugging\n"
+         "-d <0-7>       Enable verbose debugging\n"
          "-i  interface      specify the interface the application will listen on,this is a mandatory option.\n" );
 }
 int parse_args(int argc,char **argv, struct global_settings *g){

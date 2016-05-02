@@ -1,6 +1,7 @@
 #ifndef DNSMAP_H
 #define DNSMAP_H
 #include "network.h"
+#include "list.h"
 
 // need to map IP to dns for the 301 redirect
 int init_dnsmap_table();
