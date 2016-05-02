@@ -128,19 +128,36 @@ void signal_handler(int signal){
     }
 }
 void print_usage(){
- printf("Usage:\nggitm [-d] [-h] <-i interface> \n"
-	 "-h        Display this help\n"
-         "-d <0-7>       Enable verbose debugging\n"
-         "-i  interface      specify the interface the application will listen on,this is a mandatory option.\n" );
+ printf("Usage:\nggitm  <-i interface> [-d <0-7>] [-h] [-m <il,ol,outofline,inline>] [-T https_port] [-H http_port] \n"
+	 "-h                           Display this help\n"
+	 "-d <0-7>                     Enable verbose debugging,0 is quiet,7 is noisy\n"
+         "-i <interface>               specify the input interface  the application will listen on,this is a mandatory option.\n" 
+         "-o <interface>               specify the output interface for inline mode (mandatory for inline mode of operation)\r\n"
+         "-m {inline,il,outofline,ol}  specify the mode of operation,only one mode of operation allowed.\r\n"
+         "-T <1-65535>                 Specify the HTTPS port it will attempt to redirect to\r\n"
+	 "-H <1-65535>                 Specify the HTTP port it will attempt to intercept for redirection\r\n"
+);
 }
 int parse_args(int argc,char **argv, struct global_settings *g){
   char c;
-  int debug=4;
-  
-      while ((c = getopt(argc, argv, ":hd:i:")) != -1) {
+  int debug=4,h=80,t=443;
+  char mode[32];
+      while ((c = getopt(argc, argv, ":hd:i:o:T:H:m:")) != -1) {
                switch(c){
 		 case 'd':
 		   debug=atoi(optarg);
+		   break;
+		 case 'T':
+		   t=atoi(optarg);
+		   break;
+		 case 'H':
+		   h=atoi(optarg);  
+		   break;
+		 case 'm':
+		    strncpy(mode,optarg,10);
+		   break;
+		 case 'o':
+		   strncpy(global.interface_out,optarg,IFNAMSIZ);
 		   break;
 		 case 'i':
 		   strncpy(global.interface_in,optarg,IFNAMSIZ);
@@ -151,6 +168,7 @@ int parse_args(int argc,char **argv, struct global_settings *g){
 		   break;
 		 case 'h':
 		   print_usage();
+		   exit(0);
 		   break;
 		 default:
   		   print_usage();
@@ -158,7 +176,43 @@ int parse_args(int argc,char **argv, struct global_settings *g){
 		   
 	       }
       }
-      global.debug=debug;
+printf("\r\n---------------------------------------------------\r\n");
+  if(h<1 || h > 65535)
+    die(1,"Invalid HTTP port number");
+  
+    global.http_port=h;
+  
+  if(t<1 || t > 65535)
+       die(1,"Invalid HTTPS port number");
+  
+    global.https_port=t;
+  
+  
+  
+  logg("HTTP port:%i \r\nHTTPS port:%i\r\n",global.http_port,global.https_port);
+  
+  if(strlen(mode)<2)
+    strncpy(mode,"ol",3);
+  if(strncmp(mode,"inline",6)==0 || strncmp(mode,"il",2) ==0){
+    global.mode=0;
+   if(strlen(global.interface_out) < 2 || strlen(global.interface_in) <2)
+     die(1,"Invalid interfaces selected for inline mode of operation: In:%s Out:%s",global.interface_in,global.interface_out);
    
+    logg("Inline mode of operation selected.");
+  }else  
+   if(strncmp(mode,"outofline",9)==0 || strncmp(mode,"ol",2) ==0){
+    global.mode=1;
+   if(strlen(global.interface_in) < 2 )
+     die(1,"Invalid input interface for out of line mode of operation: %s",global.interface_in);
+   
+    logg("Out of line mode of operation selected.");
+
+  }
+  
+  logg("Input interface %s\r\nOutput interface %s\r\n",global.interface_in,global.interface_out);
+  
+  global.debug=debug;
+      logg("Debug level set to %i\r\n",global.debug);
+printf("\r\n---------------------------------------------------\r\n");
   return 0;
 }

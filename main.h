@@ -13,7 +13,10 @@ struct global_settings {
   int run;
   char interface_in[IFNAMSIZ];
   char interface_out[IFNAMSIZ];
+  int http_port;
+  int https_port;
   int af_socket;
+  int mode;
 };
 
 
