@@ -9,18 +9,17 @@
 #include <net/ethernet.h>
 
 struct global_settings {
-  
-  int debug;
-  int run;
-  char interface_in[IFNAMSIZ];
-  char interface_out[IFNAMSIZ];
-  int http_port;
-  int https_port;
-  int af_socket;
-  int mode;
-  struct sockaddr_ll sll;
-};
 
+        int debug;
+        int run;
+        char interface_in[IFNAMSIZ];
+        char interface_out[IFNAMSIZ];
+        int http_port;
+        int https_port;
+        int af_socket;
+        int mode;
+        struct sockaddr_ll sll;
+};
 
 struct global_settings global;
 

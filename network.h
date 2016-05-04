@@ -15,7 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
-#include <poll.h>	
+#include <poll.h>
 #include <sys/socket.h>
 #include <netinet/ether.h>
 #include <netinet/ip.h>
@@ -27,13 +27,13 @@
 #include <stdio.h>
 #include <netdb.h>
 #include <time.h>
-  
+
 #include "main.h"
 #include "util.h"
 //sets up the interface and af_packet
-int ifup (char *interface);
+int ifup(char *interface);
 //reverse of above
-int ifdown (char *interface);
+int ifdown(char *interface);
 
 /* main running loop, inspects packets,interacts with dnsmap
 interacts with ggitm.c stuff.
@@ -52,11 +52,10 @@ Eventually capture_loop should query a socket or signal to suspend operations wh
 passthrough all packets without querying dnsmap or ggitm.
 
 */
-void capture_loop (struct global_settings global);
+void capture_loop(struct global_settings global);
 
-void
-get_interface (char *if_name, struct ifreq *ifr, int d);
-/*
+void get_interface(char *if_name, struct ifreq *ifr, int d);
+/* left this here for referecne while coding
  00169 struct iphdr {
 00170 #if defined(__LITTLE_ENDIAN_BITFIELD)
 00171         __u8    ihl:4,
@@ -114,17 +113,23 @@ get_interface (char *if_name, struct ifreq *ifr, int d);
 00055         __u16   urg_ptr;
 00056 };
  */
- 
-struct PKT{
-  uint8_t *ethernet_frame;
-  struct iphdr *ipheader;
-  struct udphdr *udpheader;
-  struct tcphdr *tcpheader;
-   uint8_t *data;
-   int mtu;
-   int len;
-   int datalen;
+
+struct ethh {
+        uint8_t dst[6];
+        uint8_t src[6];
+        uint16_t ethtype;
+
 };
-void trace_dump (char *msg,struct PKT * packet);
+struct PKT {
+        uint8_t *ethernet_frame;
+        struct iphdr *ipheader;
+        struct udphdr *udpheader;
+        struct tcphdr *tcpheader;
+        uint8_t *data;
+        int mtu;
+        int len;
+        int datalen;
+};
+void trace_dump(char *msg, struct PKT *packet);
 
 #endif
