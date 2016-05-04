@@ -52,7 +52,6 @@ get_interface (char *if_name, struct ifreq *ifr, int d) {
 int
 ifup (char *if_name) {
   struct ifreq ifr;
-  struct sockaddr_ll sll;
   size_t if_name_len = strlen (if_name);
 
   if (if_name_len < sizeof (ifr.ifr_name)) {
@@ -88,8 +87,14 @@ ifup (char *if_name) {
       }
     }
   }
-
-  global.af_socket=init_af_packet(if_name,&sll);
+          
+  global.af_socket=init_af_packet(if_name,&global.sll);
+    get_interface (if_name, &ifr, IFINDEX);
+	        global.sll.sll_ifindex = ifr.ifr_ifindex;;
+	      global.sll.sll_halen = 6;
+	      global.sll.sll_protocol = htons (ETH_P_ALL);
+      	      global.sll.sll_family = AF_PACKET;
+	      
 
  if(global.af_socket < 1) 
     die(1,"Error initiating af_packet socket!.");

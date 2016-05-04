@@ -4,8 +4,9 @@
 #include <net/if.h>
 #include <stdint.h>
 #include <signal.h>
-
-
+#include <sys/socket.h>
+#include <linux/if_packet.h>
+#include <net/ethernet.h>
 
 struct global_settings {
   
@@ -17,6 +18,7 @@ struct global_settings {
   int https_port;
   int af_socket;
   int mode;
+  struct sockaddr_ll sll;
 };
 
 
