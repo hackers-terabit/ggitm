@@ -52,8 +52,30 @@ HTTP TCP session.
      
      The default mode of operation is out of line and it should be deployed much like how an IDS (intrusion detection system)
      might be deployed.
-     
-  - How can I help?
+  - Why not configure a transparent proxy and mash it up with apache or use squid and see if it works,etc...?
+  
+    A few problems - you need to whitelist sites,check if https is supported before redirection,
+    preload some sites and there are deployment issues.
+    
+    Do you (as a user) really want to configure apache,iptables or some other OS firewall,write a script
+    to keep up with it all,white list stuff,etc...(assuming that approach actually works)?
+    
+    This application is meant to be as much "pont and click" as possible,you do not need to change any OS
+    configuration, just point it at an interface that sees the target traffic (could be a copy) and allow it to responds
+    to the originator of the traffic. some users may not be able to configure ggitm on a device that forwards
+    their traffic, but they are able to copy the traffic to a box running ggitm.
+    
+    There is the question of simplicity as well,there is no reason to run a full-fledged web server or http proxy
+    for this simple task.
+    
+    Another concern might be performance - proxies or other "in line" network applications process traffic,usually all traffic.
+    adding a proxy or any other inline device will decrease performance to some degree which becomes highly unacceptable
+    for users expecting low latency and/or high bandwidth out of their network. the out of line mode of ggitm addresses
+    this concern, we want to minimize HTTP usage in our networks but we don't want that to come at a heavy price.
+    
+    
+  - How can I help?/ I still have questions:
+  
      Join #ggitm on freenode and let's chat :)
      
 ## Usage:
