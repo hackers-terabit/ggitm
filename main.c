@@ -13,9 +13,9 @@ main (int argc, char **argv) {
   parse_args(argc,argv,&global);
 
 //TODO stuff :| maybe fork() around a bit once af_packet fanout is in effect?
-ifup(&global.interface_in);
+ifup(global.interface_in);
 capture_loop(global);
-ifdown(&global.interface_in);
+ifdown(global.interface_in);
 
   return 0;
 }

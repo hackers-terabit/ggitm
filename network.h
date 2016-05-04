@@ -56,7 +56,65 @@ void capture_loop (struct global_settings global);
 
 void
 get_interface (char *if_name, struct ifreq *ifr, int d);
+/*
+ 00169 struct iphdr {
+00170 #if defined(__LITTLE_ENDIAN_BITFIELD)
+00171         __u8    ihl:4,
+00172                 version:4;
+00173 #elif defined (__BIG_ENDIAN_BITFIELD)
+00174         __u8    version:4,
+00175                 ihl:4;
+00176 #else
+00177 #error  "Please fix <asm/byteorder.h>"
+00178 #endif
+00179         __u8    tos;
+00180         __u16   tot_len;
+00181         __u16   id;
+00182         __u16   frag_off;
+00183         __u8    ttl;
+00184         __u8    protocol;
+00185         __u16   check;
+00186         __u32   saddr;
+00187         __u32   daddr;
+00188         /*The options start here. 
+00189 };
 
+00023 struct tcphdr {
+00024         __u16   source;
+00025         __u16   dest;
+00026         __u32   seq;
+00027         __u32   ack_seq;
+00028 #if defined(__LITTLE_ENDIAN_BITFIELD)
+00029         __u16   res1:4,
+00030                 doff:4,
+00031                 fin:1,
+00032                 syn:1,
+00033                 rst:1,
+00034                 psh:1,
+00035                 ack:1,
+00036                 urg:1,
+00037                 ece:1,
+00038                 cwr:1;
+00039 #elif defined(__BIG_ENDIAN_BITFIELD)
+00040         __u16   doff:4,
+00041                 res1:4,
+00042                 cwr:1,
+00043                 ece:1,
+00044                 urg:1,
+00045                 ack:1,
+00046                 psh:1,
+00047                 rst:1,
+00048                 syn:1,
+00049                 fin:1;
+00050 #else
+00051 #error  "Adjust your <asm/byteorder.h> defines"
+00052 #endif  
+00053         __u16   window;
+00054         __u16   check;
+00055         __u16   urg_ptr;
+00056 };
+ */
+ 
 struct PKT{
   uint8_t *ethernet_frame;
   struct iphdr *ipheader;

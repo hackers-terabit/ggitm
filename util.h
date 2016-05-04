@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 #include "main.h"
-
+#include "network.h"
 #define IFINDEX 0
 #define IFMTU 1
 #define IFMAC 2
@@ -44,5 +44,5 @@ int parse_args(int argc,char **argv, struct global_settings *g);
 void print_usage();
 unsigned short csum (unsigned short *buf, int nwords);
 
-
+long checksum(unsigned short *addr, unsigned int count) ;
 #endif

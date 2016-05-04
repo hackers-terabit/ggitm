@@ -173,10 +173,8 @@ void capture_loop (struct global_settings global){
 		   http_packet(packetv4); 
 		    
 		  }else{
-		 //  printf("TCP port %i\n",l4port); 
 		  }
 	      }else{
-		//printf (" NOT TCP/UDP got %x\n",ip_protocol		);
 	      }
 	    }
 	    
