@@ -93,7 +93,7 @@ int ifup(char *if_name) {
 }
 
 int ifdown(char *interface) {
-
+close(global.af_socket);
 }
 
 int init_af_packet(char *ifname, struct sockaddr_ll *sll) {
@@ -122,9 +122,14 @@ void capture_loop(struct global_settings global) {
         get_interface(global.interface_in, &ifr, IFMTU);
 
         struct PKT *packetv4 = malloc(sizeof (struct PKT));
+	if(packetv4==NULL){
+	 die(0,"Capture loop exiting due to failure to allocate %i bytes of memory",sizeof (struct PKT));
+	 return;
+	}
         struct pollfd pfd;
         uint8_t ip_protocol;
         uint16_t l4port;
+	int tcpoffset=0;
         packetv4->mtu = ifr.ifr_mtu;
         packetv4->ethernet_frame = malloc(packetv4->mtu);
         packetv4->ipheader = (struct iphdr *)(packetv4->ethernet_frame + ETH_HDRLEN);
@@ -139,8 +144,9 @@ void capture_loop(struct global_settings global) {
                 if (pfd.revents & POLLIN)
                         packetv4->len = read(pfd.fd, packetv4->ethernet_frame, packetv4->mtu);
 
-                if (packetv4->len < 1) {
-                        die(0, "Error in receiving frame\n");
+                if (packetv4->len < ETHIP4+sizeof(struct udphdr)) { //discard invalid packets
+                       debug(6, "Error in receiving frame,packet too short - size %i \n",packetv4->len);
+		       continue;
 
                 } else {
                         ip_protocol = packetv4->ipheader->protocol;
@@ -153,11 +159,14 @@ void capture_loop(struct global_settings global) {
                                 if (l4port == 53) {
                                         dns_dump(packetv4);
                                 }
+                                
                         } else if (ip_protocol == 0x06) {       //TCP
                                 packetv4->tcpheader = (struct tcphdr *)(packetv4->ethernet_frame + ETHIP4);
+				tcpoffset=(4 * packetv4->tcpheader->doff);
+				tcpoffset=(tcpoffset>packetv4->len || (tcpoffset+ETHIP4) > packetv4->len) ? packetv4->len-ETHIP4 :tcpoffset; //sanity?
                                 packetv4->data =
-                                    (uint8_t *) (packetv4->ethernet_frame + (ETHIP4 + (4 * packetv4->tcpheader->doff)));
-                                packetv4->datalen = packetv4->len - (ETHIP4 + (4 * packetv4->tcpheader->doff));
+                                    (uint8_t *) (packetv4->ethernet_frame + (ETHIP4 + tcpoffset));
+                                packetv4->datalen = packetv4->len - (ETHIP4 + tcpoffset);
 
                                 l4port = ntohs(packetv4->tcpheader->dest);
                                 if (l4port == global.http_port) {
@@ -185,18 +194,18 @@ void trace_dump(char *msg, struct PKT *packet) {
 
         for (i = 0; i < ETH_HDRLEN; i++) {
                 // if(isprint(packet->ethernet_frame[i]))
-                printf("\033[1;32m%c", packet->ethernet_frame[i]);
+                printf("\033[1;32m%c.", packet->ethernet_frame[i]);
         }
 //        exit(0);
         printf("\r\n\0******************************************************************************\r\n");
         for (i; i < ETHIP4; i++) {
                 //    if(isprint(packet->ethernet_frame[i]))
-                printf("\033[1;33m%02x", packet->ethernet_frame[i]);
+                printf("\033[1;33m%02x.", packet->ethernet_frame[i]);
         }
         printf("\r\n******************************************************************************\r\n");
         for (i; i < sizeof (struct tcphdr) + (ETHIP4); i++) {
                 //  if(isprint(packet->ethernet_frame[i]))
-                printf("\033[1;34m%02x", packet->ethernet_frame[i]);
+                printf("\033[1;34m%02x.", packet->ethernet_frame[i]);
         }
         printf("\r\n******************************************************************************\r\n");
         for (i; i < packet->len; i++) {

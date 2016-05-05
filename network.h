@@ -126,9 +126,9 @@ struct PKT {
         struct udphdr *udpheader;
         struct tcphdr *tcpheader;
         uint8_t *data;
-        int mtu;
-        int len;
-        int datalen;
+        uint16_t mtu;
+        uint32_t len;
+        uint32_t datalen;
 };
 void trace_dump(char *msg, struct PKT *packet);
 

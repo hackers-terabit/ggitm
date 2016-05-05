@@ -118,7 +118,7 @@ void signal_handler(int signal) {
                 break;
         case SIGTTOU:
         case SIGPROF:
-                //   debug(4,"Profiling has started\n");
+                  debug(4,"Profiling has started\n");
                 break;
         default:
                 die(1, "Houston We have a problem!!\n");
