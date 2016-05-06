@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=  -g -lseccomp
+CFLAGS=  -g -lseccomp -lcurl
 LDFLAGS=
 SOURCES=main.c util.c network.c dnsmap.c ggitm.c
 
