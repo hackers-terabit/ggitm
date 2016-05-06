@@ -1,0 +1,6 @@
+#default blacklist 
+#each line must contain an entire fully qualified domain name (whatever appears in the http host header field)
+#the line should not contain anything else, hosts listed in this file will not be redirected to their proportionate https:// url
+
+google.com
+
