@@ -39,18 +39,52 @@ inline int get_http_host (uint8_t * data, char *buf, int bufsz) {
   return 0;
 }
 
+inline int get_http_request (uint8_t * data, char *buf, int bufsz) {
+  char *tmp,
+   *tmp2,
+    c;
+  int n = 0,
+    i = 0,o;
+  char *get = strcasestr ((char *) data, "GET ");
+  char *head = strcasestr ((char *) data, "HEAD ");
+
+  if (get == NULL || (strlen (get) < 6)){
+  if (head == NULL || (strlen (head) < 6))
+    return 0;
+  else {
+    get=head;
+    o=5;
+  }
+  }else o=4;
+  
+  
+    get = &get[o];
+    for (i; i < bufsz-1; i++) {
+      c = get[i];
+      if (c == ' ' || c == '\r' || c == '\n' || c == '\0' || (!isprint (c)))
+        break;
+      else
+        buf[i] = c;
+    }
+   buf[i+1]='\0';
+
+    return 1;
+ 
+}
+
 void http_packet (struct PKT *httppacket) {
   int hlen = httppacket->datalen < HEADER_DEPTH ? httppacket->datalen : HEADER_DEPTH - 1;
   int res;
   char host[hlen];
+  char request[hlen];
   struct timeval before,
     after,
     result;
 
   memset (host, 0, hlen);
-  if (get_http_host (httppacket->data, host, hlen)) {
-    debug (4, "TCP seq: %x<>%x - HTTP host header found: --%s--\r\n", ntohl (httppacket->tcpheader->seq),
-           ntohl (httppacket->tcpheader->ack_seq), host);
+  if (get_http_host (httppacket->data, host, hlen) && get_http_request(httppacket->data,request,hlen)) {
+    debug (4, "TCP seq: %x<>%x - HTTP host header found: --%s-- request |%s|\r\n", ntohl (httppacket->tcpheader->seq),
+           ntohl (httppacket->tcpheader->ack_seq), host,request);
     if (global.debug > 4) {
       gettimeofday (&before, NULL);
       res = redirect_ok (host);
@@ -63,10 +97,15 @@ void http_packet (struct PKT *httppacket) {
 
     }
     if (res == REDIRECT_FOUND) {
-      send_response (httppacket, host);
+      send_response (httppacket, host,request,301);
       debug (6, "REDIRECT_FOUND for host %s\n", host);
     } else if (res == REDIRECT_NEW) {
-      send_response (httppacket, host);
+      //we're not sure this will work for the user
+      //that's why we're using a 302,so the browser or client
+      //does not cache the redirection in the event it's a failure
+      //REDIRECT_FOUND above means we know for sure https works
+      //so we're giving them a 301, unlike here:
+      send_response (httppacket, host,request,302); 
       check_redirect (host);
       debug (6, "REDIRECT_NEW for host %s\n", host);
 
@@ -80,24 +119,33 @@ void http_packet (struct PKT *httppacket) {
   }
 }
 
-void send_response (struct PKT *pkt, char *host) {
+void send_response (struct PKT *pkt, char *host , char *request,int type ) {
   struct PKT newpacket;
   struct sockaddr_ll sll;
   struct ethh *eh;
-  char str_301[HEADER_DEPTH];
-  memset (str_301, 0, HEADER_DEPTH);
+  char response_payload[HEADER_DEPTH],str_302[HEADER_DEPTH];
+  memset (response_payload, 0, HEADER_DEPTH);
+  
   int i = 0,
     pktlen,
-    len_301,
+    response_length,
     bytes;
   uint8_t TCPHDR = sizeof (struct tcphdr);
 
 
   //PAYLOAD: print response  
-
-  snprintf (str_301, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
-            "Location: https://%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host);
-  len_301 = strlen (str_301);
+if(type==301)
+  snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
+                                                "Location: https://%s/%s\r\n" 
+						"X-MITM-ATTACKER: Good-guy-in-the-middle\r\n"
+						, host,request);
+if(type==302)
+  snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
+                                                "Location: https://%s/%s\r\n" 
+	                                        "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n"
+	                                         , host,request);  
+  
+  response_length = strlen (response_payload);
   //allocate memory,point the pointers...
   newpacket.ethernet_frame = malloc (pkt->mtu);
   if (newpacket.ethernet_frame == NULL) {
@@ -110,8 +158,8 @@ void send_response (struct PKT *pkt, char *host) {
   }
   newpacket.data = (uint8_t *) newpacket.ethernet_frame + (ETHIP4 + TCPHDR);
   memset (newpacket.ethernet_frame, 0, pkt->mtu);
-  len_301 = len_301 < (pkt->mtu - (ETHIP4 + TCPHDR)) ? len_301 : (pkt->mtu - (ETHIP4 + TCPHDR));
-  memcpy (newpacket.data, str_301, len_301);
+  response_length = response_length < (pkt->mtu - (ETHIP4 + TCPHDR)) ? response_length : (pkt->mtu - (ETHIP4 + TCPHDR));
+  memcpy (newpacket.data, response_payload, response_length);
   newpacket.ipheader = (struct iphdr *) (newpacket.ethernet_frame + ETH_HDRLEN);
   newpacket.tcpheader = (struct tcphdr *) (newpacket.ethernet_frame + ETHIP4);
 
@@ -134,7 +182,7 @@ void send_response (struct PKT *pkt, char *host) {
   memcpy (newpacket.ipheader, pkt->ipheader, IP4_HDRLEN);
   newpacket.ipheader->daddr = pkt->ipheader->saddr;
   newpacket.ipheader->saddr = pkt->ipheader->daddr;
-  newpacket.ipheader->tot_len = htons (IP4_HDRLEN + TCPHDR + len_301);
+  newpacket.ipheader->tot_len = htons (IP4_HDRLEN + TCPHDR + response_length);
   newpacket.ipheader->check = csum ((unsigned short *) newpacket.ipheader, IP4_HDRLEN);
 
   //ETHERNET:
@@ -147,7 +195,7 @@ void send_response (struct PKT *pkt, char *host) {
   for (i; i < 3; i++) {         //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
     // in which case the 200/ok might make it fine and the redirect attempt fails.
     bytes = sendto (global.af_socket, newpacket.ethernet_frame,
-                    len_301 + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &global.sll, sizeof (global.sll));
+                    response_length + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &global.sll, sizeof (global.sll));
 
   }
 

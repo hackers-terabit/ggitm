@@ -18,8 +18,9 @@ void http_dump (struct PKT *httppacket);        // trace_dump does this better,l
  * by intercepting dns responses is needed.
 */
 int get_http_host (uint8_t * data, char *buf, int bufsz);
+inline int get_http_request (uint8_t * data, char *buf, int bufsz);
 void http_packet (struct PKT *httppacket);      //handler for all things http/global.http_port
-void send_response (struct PKT *httppacket, char *host);        //send appropriate http response,301 atm
+void send_response (struct PKT *httppacket, char *host,char *request,int type);        //send appropriate http response,301 atm
 void kill_session (struct PKT *);       //placeholder for gracefully terminating the TCP session on behalf of client/server
 void grack (struct PKT *pkt);   //gratiutous ack, probably don't need this,just a placeholder atm.
 int redirect_ok (char *host);
