@@ -1,0 +1,30 @@
+<!--
+	Other BoardGameGeek rulesets:
+
+		- Geekdo-static.com.xml
+		- VideoGameGeek.com.xml
+
+
+	Insecure cookies are set for these domains and hosts:
+
+		- boardgamegeek.com
+		- .boardgamegeek.com
+		- www.boardgamegeek.com
+
+-->
+<ruleset name="BoardGameGeek.com">
+	<target host="boardgamegeek.com" />
+	<target host="www.boardgamegeek.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^(?:www\.)?boardgamegeek\.com$" name="^geekproxy$" /-->
+	<!--securecookie host="^\.boardgamegeek\.com$" name="^(?:__qca|SessionID)$" /-->
+
+	<securecookie host="^(?:\.|www\.)?boardgamegeek\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+</ruleset>

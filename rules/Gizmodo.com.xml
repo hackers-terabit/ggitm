@@ -1,0 +1,48 @@
+<!--
+	For other Gawker coverage, see Gawker.com.xml.
+
+
+	CN: *.a.ssl.fastly.net
+
+
+	Insecure cookies are set for these hosts:
+
+		- gizmodo.com
+		- www.gizmodo.com
+
+
+	Mixed content:
+
+		- css from gawker-labs.com ¹
+		- Images from i.kinja-img.com
+
+		- Ads/bugs, from:
+
+			- pubads.g.doubleclick.net ²
+			- b.scorecardresearch.com ¹
+
+	¹ Secured by us
+	² Ruleset disabled by default
+
+-->
+<ruleset name="Gizmodo.com" default_off="mismatched">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="gizmodo.com" />
+	<target host="cache.gizmodo.com" />
+	<target host="us.gizmodo.com" />
+	<target host="www.gizmodo.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^(?:www\.)?gizmodo\.com$" name="^geocc$" /-->
+
+	<securecookie host="^(?:\.|www\.)?gizmodo\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

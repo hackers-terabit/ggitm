@@ -1,0 +1,39 @@
+<!--
+	Other bet365 Group rulesets:
+
+		- bet365affiliates.com.xml
+
+
+	Nonfunctional hosts in *bet365.com:
+
+		- casino ʳ
+		- poker ʳ
+		- vegas ʳ
+
+	ʳ Refused
+
+-->
+<ruleset name="bet365.com (partial)">
+
+	<target host="bet365.com"/>
+	<target host="content001.bet365.com" />
+	<target host="games.bet365.com" />
+	<target host="members.bet365.com" />
+	<target host="www.bet365.com"/>
+
+		<!--	403 vs 200 blank page => fetch test would fail.
+									-->
+		<exclusion pattern="^http://members\.bet365\.com/$" />
+
+			<!--	-ve:
+					-->
+			<test url="http://members.bet365.com/Members/Helpers/site.aspx" />
+
+
+	<securecookie host="." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,36 @@
+<!--
+	Digital Point Solutions
+
+
+	Nonfunctional hosts in *digitalpoint.com:
+
+		- geo *
+
+	* Dropped
+
+
+	Insecure cookies are set for these domains:
+
+		- .digitalpoint.com
+
+-->
+<ruleset name="Digital Point.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="digitalpoint.com" />
+	<target host="forums.digitalpoint.com" />
+	<target host="www.digitalpoint.com" />
+
+
+	<!--	CloudFlare cookies:
+					-->
+	<!--securecookie host="^\.digitalpoint\.com$" name="^(__cfduid|cf_clearance)$" /-->
+
+	<securecookie host="^\.digitalpoint\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,13 @@
+<!--
+	(www.)?: Refused
+
+-->
+<ruleset name="adultcineporn.com" default_off="connection refused">
+
+	<target host="adultcineporn.com" />
+	<target host="www.adultcineporn.com" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

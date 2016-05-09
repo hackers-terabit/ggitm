@@ -1,0 +1,34 @@
+<!--
+	Fully covered hosts in *bitmask.net:
+
+		- ^
+		- demo
+		- dl
+
+
+	These altnames don't exist:
+
+		- www.demo.bitmask.net
+		- www.dl.bitmask.net
+		- www.bitmask.net
+
+-->
+<ruleset name="Bitmask.net (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="bitmask.net" />
+	<target host="*.bitmask.net" />
+
+    <exclusion pattern="^http://deb\.bitmask\.net/" />
+
+    <test url="http://deb.bitmask.net/" />
+
+  <test url="http://bitmask.net" />
+  <test url="http://demo.bitmask.net" />
+  <test url="http://dl.bitmask.net" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

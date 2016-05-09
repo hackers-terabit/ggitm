@@ -1,0 +1,23 @@
+<!--
+	Nonfunctional subdomains:
+
+		- buildbot ¹
+		- download *
+
+	¹ Dropped
+	* Refused
+
+-->
+<ruleset name="flashrom.org" default_off="mismatch" platform="cacert">
+
+	<target host="flashrom.org" />
+	<target host="www.flashrom.org" />
+
+
+	<securecookie host="^flashrom\.org$" name=".*" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

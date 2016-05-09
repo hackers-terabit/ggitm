@@ -1,0 +1,17 @@
+<!--
+	Mixed content:
+
+		- Images from \d.bp.blogspot.com *
+
+	* Secured by us
+
+-->
+<ruleset name="GiveDirectly.org">
+
+	<target host="givedirectly.org" />
+	<target host="www.givedirectly.org" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

@@ -1,0 +1,40 @@
+<!--
+
+	Problematic domains:
+
+		- blog.booking.com ¹
+
+	¹: Timeout
+
+	For other Booking.com rulesets, see :
+
+		Villas.com.xml
+-->
+<ruleset name="Booking.com">
+
+	<target host="booking.com" />
+	<target host="*.booking.com" />
+	<target host="*.bstatic.com" />
+
+
+	<securecookie host="^(\.[\w\-]+)?\.booking\.com$" name=".+" />
+
+	<exclusion pattern="^http://blog\.booking\.com" />
+
+		<test url="http://blog.booking.com/" />
+
+	<rule from="^http://([\w\-]+\.)?booking\.com/"
+		to="https://$1booking.com/" />
+
+	<test url="http://www.booking.com/" />
+	<test url="http://secure.booking.com/" />
+
+	<rule from="^http://([\w\-]+)\.bstatic\.com/"
+		to="https://$1.bstatic.com/" />
+
+	<test url="http://r-ec.bstatic.com/" />
+	<test url="http://s-ec.bstatic.com/" />
+		<test url="http://q.bstatic.com/images/hotel/square60/276/27628205.jpg" />
+		<test url="http://r.bstatic.com/images/hotel/square60/454/4546574.jpg" />
+
+</ruleset>

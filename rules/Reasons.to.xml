@@ -1,0 +1,14 @@
+<!--
+	CN: Parallels Panel
+
+-->
+<ruleset name="Reasons.to" default_off="expired, self-signed">
+
+	<target host="reasons.to" />
+	<target host="www.reasons.to" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

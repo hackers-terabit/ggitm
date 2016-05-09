@@ -1,0 +1,19 @@
+<!--
+	Nonfunctional subdomains:
+
+		- content
+
+-->
+<ruleset name="Erooups.com" default_off="shows default page">
+
+	<target host="erooups.com" />
+	<target host="www.erooups.com" />
+
+
+	<securecookie host="^erooups\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

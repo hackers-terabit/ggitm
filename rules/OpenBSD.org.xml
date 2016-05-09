@@ -1,0 +1,19 @@
+<!--
+	Nonfunctional hosts in *openbsd.org:
+
+		- (www.) *
+		- cvsweb *
+		- https *
+
+	* Refused
+
+-->
+<ruleset name="OpenBSD.org (partial)" default_off="connection refusd">
+
+	<target host="https.openbsd.org" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

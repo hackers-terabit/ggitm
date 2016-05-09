@@ -1,0 +1,34 @@
+<!--
+	Insecure cookies are set for these hosts:
+
+		- netdoktor.se
+		- www.netdoktor.se
+
+
+	Mixed content:
+
+		- css from $self *
+		- Images from $self *
+		- favicon from $self *
+		- Ad from www.mynewsdesk.com *
+
+	* Secured by us
+
+-->
+<ruleset name="Netdoktor.se (false MCB)" platform="mixedcontent">
+  <target host="netdoktor.se" />
+  <target host="www.netdoktor.se" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^(?:www\.)?netdoktor\.se$" name="^(?:survey_toggle|vepa)$" /-->
+
+	<securecookie host="^(?:www\.)?netdoktor\.se$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>
+

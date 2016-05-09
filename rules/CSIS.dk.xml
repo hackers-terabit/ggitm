@@ -1,0 +1,18 @@
+<ruleset name="CSIS.dk">
+
+	<target host="csis.dk" />
+	<target host="tdg.csis.dk" />
+	<target host="www.csis.dk" />
+
+
+	<!--	Secured by server:
+					-->
+	<!--securecookie host="^tdg\.csis\.dk$" name="^session$" /-->
+
+	<securecookie host="^\.csis\.dk$" name=".*" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>
+

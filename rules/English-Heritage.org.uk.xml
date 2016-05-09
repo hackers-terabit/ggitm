@@ -1,0 +1,34 @@
+<!--
+	Other English Heritage rulesets:
+
+		- English-Heritage_shop.org.uk.xml
+
+
+	^english-heritage.org.uk doesn't exist.
+
+
+	Nonfunctional subdomains:
+
+		- list	(refused)
+		- www (JS http redirect)
+
+
+	Mixed content:
+
+		- Images on www from www *
+
+	* Secured by us
+
+-->
+<ruleset name="English-Heritage.org.uk (partial)" default_off="http redirect">
+
+	<target host="www.english-heritage.org.uk" />
+
+
+	<securecookie host="^www\.english-heritage\.org\.uk$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,37 @@
+<!--
+	W3C
+
+
+	Nonfunctional subdomains:
+
+		- dev *
+
+	* Dropped
+
+	Fully covered subdomains:
+
+		- www
+		- dvcs
+		- jigsaw
+		- lists
+		- validator
+		- validator-suite
+
+-->
+<ruleset name="W3.org (partial)">
+
+	<target host="w3.org" />
+	<target host="dvcs.w3.org" />
+	<target host="jigsaw.w3.org" />
+	<target host="lists.w3.org" />
+	<target host="validator.w3.org" />
+	<target host="validator-suite.w3.org" />
+	<target host="www.w3.org" />
+
+	<rule from="^http://(?:www\.)?w3\.org/"
+		to="https://www.w3.org/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,30 @@
+<!--
+	Mixed content:
+
+		- css on www from fonts.googleapis.com *
+		- Images on www from $self *
+
+	* Secured by us
+
+-->
+<ruleset name="Vidyard.com">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="vidyard.com" />
+	<target host="assets.vidyard.com" />
+	<target host="blog.vidyard.com" />
+	<target host="cdn.vidyard.com" />
+	<target host="embed.vidyard.com" />
+	<target host="play.vidyard.com" />
+	<target host="secure.vidyard.com" />
+	<target host="www.vidyard.com" />
+
+
+	<securecookie host="^\w" name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

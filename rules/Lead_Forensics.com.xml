@@ -1,0 +1,57 @@
+<!--
+	Other Lead Forensics rulesets:
+
+		- Path-follower.com.xml
+
+
+	Nonfunctional domains:
+
+		- (www.)leadforensics.com *
+
+	* Prompts for login
+
+
+	Problematic domains:
+
+		- tracker.leadforensics.com *
+
+	* Dropped
+
+
+	These altnames don't exist:
+
+		- www.new.leadforensics.com
+		- www.secure.leadforensics.com
+
+
+	Insecure cookies are set for these hosts:
+
+		- new.leadforensics.com
+
+-->
+<ruleset name="Lead Forensics.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="new.leadforensics.com" />
+	<target host="secure.leadforensics.com" />
+
+	<!--	Complications:
+				-->
+	<target host="tracker.leadforensics.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^new\.leadforensics\.com$" name="^ASP\.NET_SessionId$" /-->
+
+	<securecookie host="^new\.leadforensics\.com$" name=".+" />
+
+
+	<rule from="^http://tracker\.leadforensics\.com/"
+		to="https://secure.leadforensics.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

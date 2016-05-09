@@ -1,0 +1,31 @@
+<!--
+	Other Nanigans rulesets:
+
+		- Socialtyzetracking.com.xml
+		- Unifiedtracking.com.xml
+
+
+	Insecure cookies are set for these domains:
+
+		- .nanigans.com
+
+-->
+<ruleset name="Nanigans.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="api.nanigans.com" />
+	<target host="lp.nanigans.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.nanigans\.com$" name="^(NaN_fbx|NaN_fbxa|NaN_hash)$" /-->
+
+	<securecookie host="^lp\.nanigans\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

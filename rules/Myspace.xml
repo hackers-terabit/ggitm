@@ -1,0 +1,41 @@
+<!--
+	Other Myspace rulesets:
+
+		- Imeem.com.xml
+		- Myspace_CDN.com.xml
+
+
+	Fully covered hosts in *myspace.com:
+
+		- (www.)?
+		- b\d+ *
+
+	* Bugs
+
+
+	Insecure cookies are set for these domains:
+
+		- .myspace.com
+
+-->
+<ruleset name="Myspace.com">
+
+	<target host="myspace.com" />
+	<target host="*.myspace.com" />
+
+		<test url="http://b12.myspace.com/" />
+		<test url="http://b12.myspace.com/b12/" />
+		<test url="http://www.myspace.com/" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.myspace\.com$" name="^(?:ads|beacons_enabled|persistent_id|player|visit_id)$" /-->
+
+	<securecookie host="^\.myspace\.com$" name=".*" />
+
+
+	<rule from="^http://(b\d+\.|www\.)?myspace\.com/"
+		to="https://$1myspace.com/" />
+
+</ruleset>

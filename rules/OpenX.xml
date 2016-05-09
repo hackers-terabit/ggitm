@@ -1,0 +1,93 @@
+<!--
+	Other OpenX rulesets:
+
+		- Advertisers-OpenX.com.xml
+		- Fhserve.com.xml
+		- JumpTime.com.xml
+		- Liftdna.com.xml
+		- OpenX.net.xml
+		- OpenX.org.xml
+		- OpenX_ad_exchange.com.xml
+		- OpenX_Enterprise.com.xml
+		- Served_by_OpenX.com.xml
+
+
+	CDN buckets:
+
+		- i.cdn.openx.com.edgesuite.net
+
+			- a1621.g.akamai.net
+
+		- i.xx.openx.com.edgesuite.net
+
+			- a1773.g.akamai.net
+
+
+	Nonfunctional hosts in openx.com:
+
+		- (www.)? ²
+		- ac **
+		- docs *
+		- support *
+		- uk-ac **
+
+	² wpengine
+	* Shows blog.openx.org
+	** 504, Akamai
+
+
+	Problematic hosts in *openx.com:
+
+		- i.cdn *
+		- i.xx *
+
+	* Works, akamai
+
+
+	Fully covered hosts in *openx.com:
+
+		- ssl-i.cdn
+		- i-cdn
+		- lift
+		- pc
+		- sso
+		- ssl-i.xx
+
+
+	Mixed content:
+
+		- Web bugs, on www.openx.com from:
+
+			- marketing.liftdna.com *
+			- d3.advertisers-openx.com *
+			- u.openx.net *
+			- mediaservices-d.openxenterprise.com *
+			- t3.trackalyzer.com *
+
+	* Secured buy us
+
+
+	We don't care about web bugs, so don't
+	mark this ruleset as mixedcontent.
+
+-->
+<ruleset name="OpenX.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="ssl-i.cdn.openx.com" />
+	<target host="i-cdn.openx.com" />
+	<target host="lift.openx.com" />
+	<target host="pc.openx.com" />
+	<target host="sso.openx.com" />
+	<target host="ssl-i.xx.openx.com" />
+
+
+	<!--securecookie host="^\.openx\.com$" name="^(_mkto_trk|__utm\w)$" /-->
+	<securecookie host="^(?:i-cdn|lift|sso|d\.tradex)?\.openx\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

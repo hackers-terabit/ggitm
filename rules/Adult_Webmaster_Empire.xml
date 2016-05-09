@@ -1,0 +1,52 @@
+<!--
+	Adult Webmaster Empire
+
+	For problematic rules, see AWEmpire.com-problematic.xml.
+
+
+	Expired 2011-08-17
+
+
+	Nonfunctional subdomains:
+
+		- static
+
+
+	Problematic hosts in *awempire.com:
+
+		- promo *
+
+	* Expired
+
+
+	Insecure cookies are set for these domains:
+
+		- .awempire.com
+
+-->
+<ruleset name="AWEmpire.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="awempire.com" />
+	<target host="auth.awempire.com" />
+	<!--target host="promo.awempire.com" /-->
+	<target host="resource.awempire.com" />
+	<!--target host="www.awempire.com" /-->
+
+		<!--	Redirects to http:
+						-->
+		<!--exclusion pattern="^http://www\.awempire\.com/$" /-->
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.awempire\.com$" name="^awesec_session$" /-->
+
+	<securecookie host="^\.awempire\.com$" name="^awesec_session$" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

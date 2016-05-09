@@ -1,0 +1,26 @@
+
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://thediplomat.com/ => https://thediplomat.com/: Too many redirects while fetching 'https://thediplomat.com/'
+Fetch error: http://www.thediplomat.com/ => https://thediplomat.com/: Too many redirects while fetching 'https://thediplomat.com/'
+
+-->
+<ruleset name="The Diplomat" default_off='failed ruleset test'>
+
+	<target host="thediplomat.com" />
+	<target host="www.thediplomat.com" />
+		<!--
+			Seems to have stopped redirecting to http....
+
+		<exclusion pattern="^http://thediplomat\.com/(?!(?:contact-us|newsletter|write-for-us)(?:$|\?|/)|wp-content/(?:blogs.dir|themes)/)" /-->
+
+
+	<securecookie host="^thediplomat\.com$" name=".+" />
+
+
+	<!--	Cert only matches ^thediplomat.com.
+							-->
+	<rule from="^http://(?:www\.)?thediplomat\.com/"
+		to="https://thediplomat.com/" />
+
+</ruleset>

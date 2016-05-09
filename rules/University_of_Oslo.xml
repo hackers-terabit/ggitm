@@ -1,0 +1,47 @@
+<!--
+	Nonfunctional subdomains:
+
+		- passwords12.at.ifi ¹
+		- ifi
+		- www.ifi ¹
+		- www.matnat.uio.no ²
+
+	¹ 404, CN: heim.ifi.uio.no
+	² Redirects to mn, mismatched, CN: www.mn.uio.no)
+
+
+	Partially covered subdomains:
+
+		- (www.)ifi		(→ mn.uio.no)
+
+
+	Fully covered subdomains:
+
+		- (www.)
+		- (www.)apollon
+		- heim.ifi
+		- (www.)matnat		(→ www.mn.uio.no)
+		- (www.)mn
+		- studweb
+		- (www.)ub
+
+-->
+<ruleset name="University of Oslo">
+
+	<target host="uio.no" />
+	<target host="*.uio.no" />
+
+
+	<rule from="^http://((?:(?:www\.)?(?:apollon|mn|ub)|heim\.ifi|studweb|www)\.)?uio\.no/"
+		to="https://$1uio.no/" />
+
+	<rule from="^http://(?:www\.)?ifi\.uio\.no/(?=$|\?.*)"
+		to="https://mn.uio.no/ifi/" />
+
+	<rule from="^http://(?:www\.)?ifi\.uio\.no/it/(?:$|hjemmeside\.html$|(\?.*))"
+		to="https://mn.uio.no/ifi/tjenester/it/$1" />
+
+	<rule from="^http://(?:www\.)?matnat\.uio\.no/"
+		to="https://www.mn.uio.no/" />
+
+</ruleset>

@@ -1,0 +1,20 @@
+<!--
+	Fully covered subdomains:
+
+		- (www.)
+		- my
+
+-->
+<ruleset name="StudioPress.com">
+
+	<target host="studiopress.com" />
+	<target host="my.studiopress.com" />
+	<target host="www.studiopress.com" />
+
+
+	<securecookie host="^my\.studiopress\.com$" name=".+" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

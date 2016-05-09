@@ -1,0 +1,47 @@
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://ukfast.co.uk/ => https://ukfast.co.uk/: (51, "SSL: no alternative certificate subject name matches target host name 'ukfast.co.uk'")
+	Nonfunctional subdomains:
+
+		- pdf	(redirects to www; mismatched, CN: www.ukfast.co.uk)
+
+
+	Problematic subdomains:
+
+		- images	(redirects to www; self-signed, CN: 80.244.177.63.srvlist.ukfast.net)
+		- my2		(expired 2011-06-26, mismatched, CN: my.ukfast.co.uk)
+
+
+	Partially covered subdomains:
+
+		- (www.)	(some pages redirect to http)
+
+
+
+	Fully covered subdomains:
+
+		- images	(→ www)
+		- my
+		- my2		(→ my)
+
+-->
+<ruleset name="UKFast.co.uk (partial)" default_off='failed ruleset test'>
+
+	<target host="ukfast.co.uk" />
+	<target host="*.ukfast.co.uk" />
+		<exclusion pattern="^http://www\.ukfast\.co\.uk/(?!favicon\.ico|images/|myukfast\.html|scripts/|stylesheets/)" />
+
+
+	<securecookie host="^(?:my\.)?ukfast\.co\.uk$" name=".+" />
+
+
+	<rule from="^http://(www\.)?ukfast\.co\.uk/"
+		to="https://$1ukfast.co.uk/" />
+
+	<rule from="^http://images\.ukfast\.co\.uk/"
+		to="https://www.ukfast.co.uk/images/" />
+
+	<rule from="^http://my2?\.ukfast\.co\.uk/"
+		to="https://my.ukfast.co.uk/" />
+
+</ruleset>

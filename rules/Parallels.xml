@@ -1,0 +1,73 @@
+<!--
+	Other Parallels rulesets:
+
+		- Positive-Software.xml
+
+
+	Nonfunctional subdomains:
+
+		- chat
+		- download *
+		- kb
+		- forum.sp ³
+		- kb.sp ³
+
+	* 504; mismatched, CN: edgecastcdn.net
+	³ Refused
+
+
+	Problematic hosts in *parallels.com:
+
+		- blogs ¹
+		- i3 ²
+		- spblog ³
+
+	¹ Refused
+	² EdgeCast
+	³ Squarespace
+
+
+	Insecure cookies are set for these domains:
+
+		- .parallels.com
+		- spblog.parallels.com
+
+-->
+<ruleset name="Parallels.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="parallels.com" />
+	<target host="forum.parallels.com" />
+	<target host="sp.parallels.com" />
+	<target host="www.sp.parallels.com" />
+	<target host="store.parallels.com" />
+	<target host="www.parallels.com" />
+
+	<!--	Complications:
+				-->
+	<target host="blog.parallels.com" />
+	<target host="i3.parallels.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.parallels\.com$" name="^SS_MID$" /-->
+	<!--securecookie host="^spblog\.parallels\.com$" name="^(JSESSIONID|crumb)$" /-->
+
+	<!--	Tracking cookies:
+					-->
+	<securecookie host="^\.parallels\.com$" name="^s_\w+$" />
+	<securecookie host="^store\.parallels\.com$" name=".+" />
+
+
+	<!--rule from="^http://blogs\.parallels\.com/"
+		to="https://parallelsblog.squarespace.com/" /-->
+
+	<rule from="^http://i3\.parallels\.com/"
+		to="https://www.parallels.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

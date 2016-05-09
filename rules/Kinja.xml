@@ -1,0 +1,70 @@
+<!--
+	For problematic rules, see Kinja-problematic.xml.
+
+	For other Gawker coverage, see Gawker.xml.
+
+
+	CDN buckets:
+
+		- a.prod.fastly.net
+
+			- api
+			- front
+			- gawker
+			- legal
+			- neetzanz
+			- www
+
+
+	Problematic hosts in kinja.com:
+
+		- front *
+		- gawker *
+		- legal
+		- neetzanz *
+		- www *
+
+	* Works, mismatched, CN: *.a.ssl.fastly.net
+
+
+	Insecure cookies are set for these hosts:
+
+		- kinja.com
+
+
+	api sets KinjaToken wildcard cookie on whichever domain it is loaded from.
+
+
+	Mixed content:
+
+		- Bug on ^ from b.scorecardresearch.com *
+
+	* Secured by us
+
+-->
+<ruleset name="Kinja.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="kinja.com" />
+	<target host="api.kinja.com" />
+
+	<!--	Complications:
+				-->
+	<target host="www.kinja.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^kinja\.com$" name="^geocc$" /-->
+
+	<securecookie host="^kinja\.com$" name=".+" />
+
+
+	<rule from="^http://www\.kinja\.com/"
+		to="https://kinja.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

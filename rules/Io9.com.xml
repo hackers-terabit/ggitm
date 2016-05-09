@@ -1,0 +1,35 @@
+<!--
+	For other Gawker coverage, see Gawker.xml.
+
+
+	CN: *.a.ssl.fastly.net
+
+
+	Mixed content:
+
+		- Ads/bugs, from:
+
+			- pubads.g.doubleclick.net ¹
+			- b.comcardresearch.com ²
+
+	¹ Rule not enabled by default
+	² Secured by us
+
+-->
+<ruleset name="io9.com" default_off="mismatched">
+
+	<target host="io9.com" />
+	<target host="www.io9.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^(?:www\.)?io9\.com$" name="^geocc$" /-->
+
+	<securecookie host="^(?:\.|www\.)?io9\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,8 @@
+<ruleset name="National Security Agency" platform="mixedcontent">
+
+	<target host="www.nsa.gov" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

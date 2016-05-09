@@ -1,0 +1,13 @@
+<ruleset name="512 Pixels.net" default_off="mismatched">
+
+	<target host="512pixels.net" />
+	<target host="www.512pixels.net" />
+
+
+	<securecookie host="^\.512pixels\.net$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

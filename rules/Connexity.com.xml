@@ -1,0 +1,26 @@
+<!--
+	Other Connexity rulesets:
+
+		- Connexity.net.xml
+
+
+	Nonfunctional hosts in *connexity.com:
+
+		- ^ *	(reset)
+		- www *	(redirects to http)
+
+	* Mismatched, CN: pro.connexity.com
+
+-->
+<ruleset name="Connexity.com (partial)">
+
+	<target host="pro.connexity.com" />
+
+
+	<securecookie host="^\w" name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

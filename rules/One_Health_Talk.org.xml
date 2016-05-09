@@ -1,0 +1,17 @@
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://www.onehealthtalk.org/ => http://www.onehealthtalk.org/: (6, 'Could not resolve host: www.onehealthtalk.org')
+	Some pages redirect to http.
+
+-->
+<ruleset name="One Health Talk.org (partial)" default_off='failed ruleset test'>
+
+	<target host="onehealthtalk.org" />
+	<target host="www.onehealthtalk.org" />
+		<!--exclusion pattern="^http://(www\.)?onehealthtalk\.org/+($|\?|index\.cfm)" /-->
+
+
+	<rule from="^http://(www\.)?onehealthtalk\.org/(1/(?:assets|cache|css|includes|js)/|favicon\.ico|images/|_Incapsula_Resource(?:$|\?)|member(?:$|[?/]))"
+		to="https://$1onehealthtalk.org/$2" />
+
+</ruleset>

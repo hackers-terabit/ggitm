@@ -1,0 +1,88 @@
+<!--
+	Other FriendFinder rulesets:
+
+		- Adult-FriendFinder.xml
+		- Cams.com.xml
+		- Pop6.com.xml
+		- Securedataimages.com.xml
+		- Steamray.com.xml
+
+
+	CDN buckets:
+
+		 - cs77.wac.edgecastcdn.net
+
+			- graphics.friendfinder.com
+			- graphics.pop6.com
+
+
+	Problematic hosts in *friendfinder.com:
+
+		- (www.)		(works, mismatched, CN: secure.friendfinder.com)
+		- graphics *
+		- photos *
+		- piclist *
+
+	* Works, mismatched, CN: *.securedataimages.com
+
+
+	Fully covered hosts in *friendfinder.com:
+
+		- (www.)			(→ secure.friendfinder.com)
+		- graphics			(→ secureimage.securedataimages.com)
+		- media
+		- photos			(→ secureimage.securedataimages.com)
+		- piclist			(→ secureimage.securedataimages.com)
+		- secure
+
+
+	These altnames don't exist:
+
+		- www.secure.friendfinder.com
+
+
+	Insecure cookies are set for these domains:
+
+		- .friendfinder.com
+
+
+	Mixed content:
+
+		- Bug on secure from media.friendfinder.com *
+
+	* Secured by us
+
+-->
+<ruleset name="FriendFinder.com">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="media.friendfinder.com" />
+	<target host="secure.friendfinder.com" />
+
+	<!--	Complications:
+				-->
+	<target host="friendfinder.com" />
+	<target host="graphics.friendfinder.com" />
+	<target host="photos.friendfinder.com" />
+	<target host="piclist.friendfinder.com" />
+	<target host="www.friendfinder.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.friendfinder\.com$" name="^(AB_TRACKING|HISTORY|IP_COUNTRY|LOCATION_FROM_IP|PrefID|REFERRAL_URL|click_id_time|ff_tr|ff_who|v_hash)$" /-->
+
+	<securecookie host="^\.friendfinder\.com$" name=".+" />
+
+
+	<rule from="^http://(?:www\.)?friendfinder\.com/"
+		to="https://secure.friendfinder.com/" />
+
+	<rule from="^http://(?:graphics|photos|piclist)\.friendfinder\.com/"
+		to="https://secureimage.securedataimages.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

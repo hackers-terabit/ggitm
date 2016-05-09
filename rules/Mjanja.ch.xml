@@ -1,0 +1,21 @@
+<!--
+	www.mjanja.ch: 403
+
+-->
+<ruleset name="Mjanja.ch">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="mjanja.ch" />
+
+	<!--	Complications:
+				-->
+	<target host="www.mjanja.ch" />
+
+
+	<rule from="^http://www\.mjanja\.ch/"
+		to="https://mjanja.ch/" />
+
+	<rule from="^http:"
+		to="https:" />
+</ruleset>

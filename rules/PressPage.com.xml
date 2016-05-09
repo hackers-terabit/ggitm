@@ -1,0 +1,28 @@
+<!--
+	(www.): shows default page, CN: localhost
+
+
+	CDN bucktes:
+
+		- presspage-production-content.s3.amazonaws.com
+
+-->
+<ruleset name="PressPage.com (partial)">
+
+	<target host="client.presspage.com" />
+	<target host="content.presspage.com" />
+	<target host="manager.presspage.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^client\.presspage\.com$" name="^PPSESSION$" /-->
+	<!--securecookie host="^manager\.presspage\.com$" name="^PHPSESSID$" /-->
+
+	<securecookie host="^\w" name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

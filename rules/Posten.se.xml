@@ -1,0 +1,16 @@
+<ruleset name="Posten.se">
+
+	<!--	Direct rewrites:
+				-->
+  <target host="www.posten.se" />
+
+	<!--	Complications:
+				-->
+  <target host="posten.se" />
+
+  <rule from="^http://posten\.se/" to="https://www.posten.se/"/>
+
+	<rule from="^http:"
+		to="https:"/>
+</ruleset>
+

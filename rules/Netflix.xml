@@ -1,0 +1,92 @@
+<!--
+	Disabled per multiple user reports of intermittent breakage, one of which is at
+	https://github.com/EFForg/https-everywhere/issues/2232.
+
+	For problematic rules, see Netflix.com-problematic.xml.
+
+
+	CDN buckets:
+
+		- images.netflix.com.edgesuite.net
+
+			- jsapi
+
+		- netflix.gilroystaging.co.uk
+		- netflix.hs.llnwd.net/e1/us/
+
+
+	Nonfunctional hosts in *netflix.com:
+
+		- blog ¹
+		- developer ²
+		- ir ³
+		- techblog ¹
+		- ukirelandblog ¹
+		- image
+
+	¹ Blogger
+	² Mashery
+	³ Shareholder
+
+
+	Problematic hosts in *netflix.com:
+
+		- jsapi *
+
+	* Works, akamai
+
+
+	Insecure cookies are set for these domains and hosts:
+
+		- .netflix.com
+		- .cl.netflix.com
+		- contactus.netflix.com
+		- help.netflix.com
+		- .help.netflix.com
+		- openconnect.netflix.com
+
+
+	Mixed content:
+
+		- Images on help from secure *
+
+	* Secured by us
+
+-->
+<ruleset name="Netflix.com (partial)" default_off="Breaks site">
+
+	<target host="netflix.com" />
+	<target host="account.netflix.com" />
+	<target host="contactus.netflix.com" />
+	<target host="help.netflix.com" />
+	<target host="jobs.netflix.com" />
+	<target host="ncds.netflix.com" />
+	<target host="openconnect.netflix.com" />
+	<target host="secure.netflix.com" />
+	<target host="signup.netflix.com" />
+	<target host="www.netflix.com" />
+	<target host="www1.netflix.com" />
+	<target host="www2.netflix.com" />
+	<target host="www3.netflix.com" />
+
+		<!--	Redirect to http:
+						-->
+		<!--exclusion pattern="^http://ca\.netflix\.com/($|\?)" /-->
+		<!--exclusion pattern="^http://(blog|ca|developer|ir|techblog|ukirelandblog)\.netflix\.com/" /-->
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.netflix\.com$" name="^(NetflixId|SID|memclid|tlr|zuulrgn)$" /-->
+	<!--securecookie host="^\.cl\.netflix\.com$" name="^cL$" /-->
+	<!--securecookie host="^\.(contactus|help)\.netflix\.com$" name="^hcVisitorId$" /-->
+	<!--securecookie host="^help\.netflix\.com$" name="^JSESSIONID$" /-->
+	<!--securecookie host="^openconnect\.netflix\.com$" name="^X-Mapping-\w+$" /-->
+
+	<securecookie host="^\w" name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

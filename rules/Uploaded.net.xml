@@ -1,0 +1,18 @@
+<!--
+	Nonfunctional subdomains:
+
+		- stor\d{4}
+
+-->
+<ruleset name="uploaded.net (partial)">
+
+	<target host="uploaded.net" />
+	<target host="www.uploaded.net" />
+
+
+	<securecookie host="^uploaded\.net$" name=".+" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

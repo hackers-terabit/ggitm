@@ -1,0 +1,9 @@
+<ruleset name="Tek Syndicate.com">
+
+	<target host="teksyndicate.com" />
+	<target host="www.teksyndicate.com" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

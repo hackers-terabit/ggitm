@@ -1,0 +1,28 @@
+<!--
+	Problematic hosts in *nuget.org:
+
+		- blog *
+
+	* Github / mismatched
+
+-->
+<ruleset name="NuGet.org (partial)">
+
+	<target host="nuget.org" />
+	<target host="dist.nuget.org" />
+	<target host="docs.nuget.org" />
+	<target host="status.nuget.org" />
+	<target host="www.nuget.org" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.(?:docs|status)\.nuget\.org$" name="^ARRAffinity$" /-->
+
+	<securecookie host="^\.(?:doc|statu)s\." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

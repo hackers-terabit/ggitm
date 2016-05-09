@@ -1,0 +1,13 @@
+<ruleset name="haveibeenpwned.com">
+
+	<target host="haveibeenpwned.com" />
+	<target host="www.haveibeenpwned.com" />
+
+
+	<securecookie host="." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

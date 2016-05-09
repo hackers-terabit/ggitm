@@ -1,0 +1,19 @@
+<!--
+	Samsung mySingle
+
+	For other Samsung coverage, see Samsung.xml.
+
+-->
+<ruleset name="Samsung.net">
+
+	<target host="samsung.net" />
+	<target host="www.samsung.net" />
+
+
+	<securecookie host="." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

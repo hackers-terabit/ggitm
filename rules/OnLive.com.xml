@@ -1,0 +1,56 @@
+
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://onlive.com/ => https://onlive.com/: (51, "SSL: no alternative certificate subject name matches target host name 'onlive.com'")
+
+	CDN buckets:
+
+		- dy96a7026js9l.cloudfront.net
+
+
+	Fully covered subdomains:
+
+		- (www.)
+		- games
+		- support
+
+
+	Problematic domains:
+
+		- blog *
+
+	* wordpress => handled in WordPress-blogs.xml
+
+
+	Observed cookie domains:
+
+		- games *
+		- support *
+		- www *
+
+	* Secured by server
+
+
+	Mixed content:
+
+		- Images on www from testnewsol.files.wordpress.com *
+
+	* Secured by us
+
+-->
+<ruleset name="OnLive.com (partial)" default_off='failed ruleset test'>
+
+	<target host="onlive.com" />
+	<target host="*.onlive.com" />
+		<!--exclusion pattern="^http://blog\." /-->
+
+
+	<!--	Secured by server:
+					-->
+	<!--securecookie host="^(games|support|www)\.onlive\.com$" name=".+" /-->
+
+
+	<rule from="^http://((?:games|support|www)\.)?onlive\.com/"
+		to="https://$1onlive.com/" />
+
+</ruleset>

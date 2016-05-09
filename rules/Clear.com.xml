@@ -1,0 +1,13 @@
+<!--
+	For other Sprint coverage, see Sprint.com.xml.
+-->
+<ruleset name="Clear.com">
+
+	<target host="clear.com" />
+	<target host="www.clear.com" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

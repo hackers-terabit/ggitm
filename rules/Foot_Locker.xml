@@ -1,0 +1,54 @@
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://footlocker.com/ => https://www.footlocker.com/: Cycle detected - URL already encountered: https://www.footlocker.com/
+	For other Foot Locker coverage, see Foot_Locker_Inc.xml.
+
+
+	CDN buckets:
+
+		- unlocked-uploads.s3.amazonaws.com
+
+
+	Nonfunctional domains:
+
+		- unlocked.footlocker.com
+		- www.foot-locker.co.uk
+
+
+	Problematic subdomains:
+
+		- ^	(expired, only matches www)
+
+
+	Fully covered subdomains:
+
+		- ^	(→ www)
+		- images
+		- m
+		- www
+
+
+	Targets solely for wildcard cookies:
+
+		- *.www.footlocker.com
+
+-->
+<ruleset name="Foot Locker (partial)" default_off='failed ruleset test'>
+
+
+	<target host="footlocker.com" />
+	<target host="*.footlocker.com" />
+	<target host="*.www.footlocker.com" />
+
+
+	<securecookie host="^.*\.footlocker\.com$" name=".+" />
+
+
+	<rule from="^http://(?:www\.)?footlocker\.com/"
+		to="https://www.footlocker.com/" />
+
+
+	<rule from="^http://(images|m)\.footlocker\.com/"
+		to="https://$1.footlocker.com/" />
+
+</ruleset>

@@ -1,0 +1,53 @@
+<!--
+	Other Springer rulesets:
+
+		- Biomed-Central.xml
+		- Springer-Gabler.de.xml
+		- Springer_Zahnmedizin.de.xml
+
+
+	Nonfunctional domains:
+
+		- (www.)chemistrycentral.com	(times out)
+		- link.springer.com *
+		- rd.springer.com *
+		- (www.)springeropen.com *
+
+	* 504, akamai
+
+
+	Problematic domains:
+
+		- springer.com			(mismatched, CN: www.springer.com)
+		- springerlink.com
+		- www.springerlink.com		(akamai)
+		- (www.)springeronline.com	(works; mismatched, CN: www.springer.com)
+
+-->
+<ruleset name="Springer.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="admin.springer.com" />
+	<target host="adwizard.springer.com" />
+	<target host="checkout.springer.com" />
+	<target host="images.springer.com" />
+	<target host="preview.springer.com" />
+	<target host="static.springer.com" />
+	<target host="www.springer.com" />
+
+	<!--	Complications:
+				-->
+	<target host="springer.com" />
+
+
+	<securecookie host=".\.springer\.com$" name="." />
+
+
+	<rule from="^http://springer\.com/"
+		to="https://www.springer.com/"/>
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

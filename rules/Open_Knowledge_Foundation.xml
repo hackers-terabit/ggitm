@@ -1,0 +1,51 @@
+<!--
+	Open Knowledge Foundation
+
+
+	Nonfunctional hosts in *okfn.org:
+
+		- blog *
+
+	* WP Engine
+
+
+	www.okfn.org: Dropped
+
+
+	Insecure cookies are set for these domains and hosts:
+
+		- okfn.org
+		- .okfn.org
+
+-->
+<ruleset name="OKFn.org (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="okfn.org" />
+	<target host="assets.okfn.org" />
+	<target host="pad.okfn.org" />
+
+	<!--	Complications:
+				-->
+	<target host="www.okfn.org" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^okfn\.org$" name="django_language$" /-->
+	<!--securecookie host="^\.okfn\.org$" name="^(__cfduid|cf_clearance)$" /-->
+
+	<securecookie host="." name="." />
+
+
+	<!--	Redirect keeps path, args,
+		and forward slash:
+					-->
+	<rule from="^http://www\.okfn\.org/"
+		to="https://okfn.org/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

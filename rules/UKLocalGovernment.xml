@@ -1,0 +1,49 @@
+<!--
+	Local Government Association
+
+
+	There's no exhaustive list of subdomains, but local councils are listed at:
+	http://www.direct.gov.uk/en/Dl1/Directories/Localcouncils/DG_4003594
+
+
+	Nonfunctional hosts in *local.gov.uk:
+
+		- (www.)? ᵈ
+		- 100days ᵖ
+		- clip ʳ
+		- jobs ᵃ
+		- lgaconservatives ᵈ
+		- lgaevents ³
+		- www.lgaindependent ᵈ
+		- lgalabour ᵈ
+
+	³ 403
+	ᵃ Shows another domain
+	ᵈ Dropped
+	ʳ Refused
+
+
+	Problematic hosts in *local.gov.uk:
+
+		- lginform ᵏ
+
+	ᵏ Revoked
+
+-->
+<ruleset name="UK Local Government (partial)">
+
+	<target host="knowledgehub.local.gov.uk" />
+
+  <!--target host="www.miltonkeynes.gov.uk"/-->
+  <!--
+  These are self-signed, but probably still work:
+  <target host="hartlepool.gov.uk"/><target host="www.hartlepool.gov.uk"/>
+  <target host="lewes.gov.uk"/><target host="www.lewes.gov.uk"/>
+  <target host="newcastle-staffs.gov.uk"/><target host="www.newcastle-staffs.gov.uk"/>
+  -->
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

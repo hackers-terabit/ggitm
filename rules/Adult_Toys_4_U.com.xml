@@ -1,0 +1,14 @@
+<ruleset name="Adult Toys 4 U.com">
+
+	<target host="adulttoys4u.com.au" />
+	<target host="www.adulttoys4u.com.au" />
+
+
+	<!--	Not secured by server:
+					-->
+	<securecookie host="^\.www\.adulttoys4u\.com\.au$" name=".+" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

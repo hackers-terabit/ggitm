@@ -1,0 +1,49 @@
+<!--
+	For other FriendFinder coverage, see FriendFinder.xml.
+
+
+	CDN buckets:
+
+		 - cs77.wac.edgecastcdn.net
+
+			- graphics.adultfriendfinder.com
+
+
+	Problematic subdomains:
+
+		- (www.)	(works, mismatched, CN: secure.adultfriendfinder.com)
+		- graphics	(works, mismatched, CN: *.securedataimages.com)
+
+
+	Fully covered subdomains:
+
+		- (www.)	(→ secure)
+		- banners	(→ secure)
+		- graphics	(→ secureimage.securedataimages.com)
+		- secure
+
+-->
+<ruleset name="Adult FriendFinder.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="secure.adultfriendfinder.com" />
+
+	<!--	Complications:
+				-->
+	<target host="adultfriendfinder.com" />
+	<target host="banners.adultfriendfinder.com" />
+	<target host="graphics.adultfriendfinder.com" />
+	<target host="www.adultfriendfinder.com" />
+
+
+	<rule from="^http://(?:banners\.|www\.)?adultfriendfinder\.com/"
+		to="https://secure.adultfriendfinder.com/" />
+
+	<rule from="^http://graphics\.adultfriendfinder\.com/"
+		to="https://secureimage.securedataimages.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

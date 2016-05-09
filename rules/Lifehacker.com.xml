@@ -1,0 +1,21 @@
+<!--
+	For other Gawker coverage, see Gawker.xml.
+
+
+	CN: *.a.ssl.fastly.net
+
+-->
+<ruleset name="Lifehacker.com" default_off="mismatched">
+
+	<target host="lifehacker.com" />
+	<target host="cache.lifehacker.com" />
+	<target host="www.lifehacker.com" />
+
+
+	<securecookie host="^\.?lifehacker\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

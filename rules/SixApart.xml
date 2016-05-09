@@ -1,0 +1,17 @@
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://sixapart.com/ => https://sixapart.com/: (28, 'Connection timed out after 10000 milliseconds')
+Fetch error: http://help.sixapart.com/ => https://help.sixapart.com/: (28, 'Connection timed out after 10000 milliseconds')
+Fetch error: http://www.sixapart.com/ => https://www.sixapart.com/: (28, 'Connection timed out after 10001 milliseconds')
+-->
+<ruleset name="SixApart" platform="mixedcontent" default_off='failed ruleset test'>
+  <target host="sixapart.com" />
+  <target host="help.sixapart.com" />
+  <target host="www.sixapart.com" />
+  <target host="sixapart.jp" />
+  <target host="www.sixapart.jp" />
+
+  <rule from="^http://sixapart\.com/" to="https://sixapart.com/"/>
+  <rule from="^http://(help|www)\.sixapart\.com/" to="https://$1.sixapart.com/"/>
+  <rule from="^http://(?:www\.)?sixapart\.jp/" to="https://www.sixapart.jp/"/>
+</ruleset>

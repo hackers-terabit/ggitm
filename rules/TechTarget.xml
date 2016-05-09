@@ -1,0 +1,53 @@
+<!--
+Disabled by https-everywhere-checker because:
+Fetch error: http://techtarget.com/ => https://www.techtarget.com/: (28, 'Operation timed out after 0 milliseconds with 0 out of 0 bytes received')
+	CDN buckets:
+
+		- cdn.ttgtmedia.com.cdngc.net
+
+		- irsolutions.snl.com
+
+			- investor
+
+
+	Nonfunctional domains:
+
+		- techtarget.com subdomains:
+
+			- investor *
+			- searchsecurity *
+			- users		(refused)
+
+		- cdn.ttgtmedia.com		(403; mismatched, CN: ssl2.cdngc.net)
+
+	* Dropped
+
+
+	Problematic subdomains:
+
+		- ^	(dropped)
+
+
+	Fully covered subdomains:
+
+		- (www.)	(^ → www)
+		- media
+		- techtargetsummit
+
+-->
+<ruleset name="TechTarget (partial)" default_off='failed ruleset test'>
+
+	<target host="techtarget.com" />
+	<target host="*.techtarget.com" />
+
+
+	<securecookie host="^(?:media|techtargetsummit|www)\.techtarget\.com$" name=".+" />
+
+
+	<rule from="^http://(?:www\.)?techtarget\.com/"
+		to="https://www.techtarget.com/" />
+
+	<rule from="^http://(media|techtargetsummit)\.techtarget\.com/"
+		to="https://$1.techtarget.com/" />
+
+</ruleset>

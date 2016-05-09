@@ -1,0 +1,52 @@
+<!--
+	For problematic rules, see Gravity-mismatches.xml.
+
+
+	blog.gravity.com is handled in WordPress-blogs.xml.
+
+
+	Other Gravity rulesets:
+
+		- GrvCDN.com.xml
+
+
+	CDN buckets:
+
+		- cdn.insights.gravity.com.edgesuite.net
+		- rma-api.gravity.com.edgesuite.net
+
+
+	Problematic hosts in *gravity.com:
+
+		- ^		(cert only matches www)
+		- blog		(wordpress)
+		- insights	(mismatched, CN: analytics.gravity.com)
+		- cdn.insights *
+		- rma-api *
+		- www		(expired 2013-02-02)
+
+	* Akamai
+
+-->
+<ruleset name="Gravity.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="analytics.gravity.com" />
+	<target host="api.gravity.com" />
+
+	<!--	Complications:
+				-->
+	<target host="insights.gravity.com" />
+
+
+	<securecookie host="^(?:analytics)?\.gravity\.com$" name=".+" />
+
+
+	<rule from="^http://insights\.gravity\.com/"
+		to="https://analytics.gravity.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

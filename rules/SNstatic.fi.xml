@@ -1,0 +1,39 @@
+<!--
+	For other Sanoma Corporation coverage, see Sanoma.com.xml.
+
+
+	Sanoma News
+
+
+	Problematic subdomains:
+
+		- is12 (breaks static content on www.iltasanomat.fi)
+		- hs1[0-3] (redirects to http; mismatched, CN: *.hs.fi)
+
+
+	Fully covered subdomains:
+
+		- files
+		- hs1[0-3]	(→ www.hs.fi)
+		- is20	(→ www.iltasanomat.fi)
+
+-->
+<ruleset name="SNstatic.fi">
+
+	<target host="files.snstatic.fi" />
+	<target host="is20.snstatic.fi" />
+	<target host="hs10.snstatic.fi" />
+	<target host="hs11.snstatic.fi" />
+	<target host="hs12.snstatic.fi" />
+	<target host="hs13.snstatic.fi" />
+
+	<rule from="^http://is20\.snstatic\.fi/"
+		to="https://www.iltasanomat.fi/" />
+
+	<rule from="^http://hs1[0-3]\.snstatic\.fi/"
+		to="https://www.hs.fi/" />
+
+	<rule from="^http:"
+			to="https:" />
+
+</ruleset>

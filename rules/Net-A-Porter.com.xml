@@ -1,0 +1,61 @@
+<!--
+	CDN buckets:
+
+		- netaporterll3.sslcs.cdngc.net
+
+
+	Problematic hosts in *net-a-porter.com:
+
+		- ^ ¹
+		- weathertop ²
+
+	¹ Dropped
+	² Expired
+
+
+	Fully covered subdomains:
+
+		- (www.)	(^ → www)
+		- cache
+		- fashionfix
+		- www-lt
+
+
+	Insecure cookies are set for these domains and hosts:
+
+		- www.net-a-porter.com
+		- .www.net-a-porter.com
+		- .www-lt.net-a-porter.com
+
+-->
+<ruleset name="Net-A-Porter.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="girdle-assets.net-a-porter.com" />
+	<target host="cache.net-a-porter.com" />
+	<target host="fashionfix.net-a-porter.com" />
+	<!--target host="weathertop.net-a-porter.com" /-->
+	<target host="www.net-a-porter.com" />
+	<target host="www-lt.net-a-porter.com" />
+
+	<!--	Complications:
+				-->
+	<target host="net-a-porter.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="www\.net-a-porter\.com$" name="^ADRUM_\d+_\d+_\d+" /-->
+	<!--securecookie host="\.www(?:-lt)?\.net-a-porter\.com$" name="^(?:channel|country_iso|deviceType|lang_iso|lang_time)$" /-->
+
+	<securecookie host=".*\.net-a-porter\.com$" name=".+" />
+
+
+	<rule from="^http://net-a-porter\.com/"
+		to="https://www.net-a-porter.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

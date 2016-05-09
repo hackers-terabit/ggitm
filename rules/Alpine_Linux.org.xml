@@ -1,0 +1,63 @@
+<!--
+	Nonfunctional hosts in *alpinelinux.org:
+
+		- git ²
+		- mail ²
+		- nl ³
+		- wiki *
+
+	² Dropped
+	³ Shows bugs
+	* 503
+
+
+	Problematic hosts in *alpinelinux.org:
+
+		- (www.)? *
+		- pkgs ²
+		- forum *
+
+	* Mixed css
+	² Missing certificate chain
+
+
+	Insecure cookies are set for these hosts:
+
+		- bugs.alpinelinux.org
+
+
+	Mixed content:
+
+		- css, on:
+		
+			- (www.)? from yui.yahooapis.com
+			- forum from $self *
+			- forum from fonts.googleapis.com *
+
+		- Images on forum from $self *
+
+	* Secured by us
+
+-->
+<ruleset name="Alpine Linux.org (partial)" platform="mixedcontent">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="alpinelinux.org" />
+	<target host="bugs.alpinelinux.org" />
+	<target host="forums.alpinelinux.org" />
+	<!--target host="pkgs.alpinelinux.org" /-->
+	<target host="www.alpinelinux.org" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^bugs\.alpinelinux\.org$" name="^_redmine_session" /-->
+
+	<securecookie host="." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

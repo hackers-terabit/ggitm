@@ -1,0 +1,9 @@
+<ruleset name="Packet.net">
+
+	<target host="packet.net" />
+	<target host="www.packet.net" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

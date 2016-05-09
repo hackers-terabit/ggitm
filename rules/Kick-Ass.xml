@@ -1,0 +1,13 @@
+<ruleset name="Kick Ass">
+
+	<target host="kickassapp.com" />
+	<target host="hi.kickassapp.com" />
+	<target host="www.kickassapp.com" />
+
+
+	<securecookie host="^\.?kickassapp\.com$" name=".*" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

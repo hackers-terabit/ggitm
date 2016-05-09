@@ -1,0 +1,33 @@
+<!--
+	Insecure cookies are set for these domains:
+
+		- .whatsapp.com
+
+
+	Mixed content:
+
+		- favicon on translate from www.whatsapp.com *
+
+	* Secured by us
+
+-->
+<ruleset name="WhatsApp.com">
+
+	<target host="whatsapp.com" />
+	<target host="blog.whatsapp.com" />
+	<target host="translate.whatsapp.com" />
+	<target host="web.whatsapp.com" />
+	<target host="www.whatsapp.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.whatsapp\.com$" name="^lang-pref$" /-->
+
+	<securecookie host="." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

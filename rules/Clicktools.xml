@@ -1,0 +1,29 @@
+<!--
+	Insecure cookies are set for these hosts:
+
+		- app.clicktools.com
+		- www.clicktools.com
+
+-->
+<ruleset name="Clicktools.com">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="clicktools.com" />
+	<target host="app.clicktools.com" />
+	<target host="mktg.clicktools.com" />
+	<target host="web.clicktools.com" />
+	<target host="www.clicktools.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^(?:app|www)\.clicktools\.com$" name="^BIGipServer.*" /-->
+
+	<securecookie host="^(?:.+\.)?clicktools\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

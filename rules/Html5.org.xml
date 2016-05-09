@@ -1,0 +1,10 @@
+<ruleset name="html5.org">
+
+	<target host="html5.org" />
+	<target host="platform.html5.org" />
+	<target host="www.html5.org" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

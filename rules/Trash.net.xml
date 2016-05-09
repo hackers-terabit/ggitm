@@ -1,0 +1,19 @@
+<!--
+	Nonfunctional subdomains:
+
+		- $	(cert: your; shows your's data)
+		- beer	(ditto)
+		- www	(ditto)
+
+-->
+<ruleset name="trash.net (partial)" platform="cacert">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="your.trash.net" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

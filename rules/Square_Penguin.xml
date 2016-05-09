@@ -1,0 +1,12 @@
+<ruleset name="Square Penguin">
+
+	<target host="squarepenguin.co.uk" />
+	<target host="www.squarepenguin.co.uk" />
+
+
+	<securecookie host="^\.squarepenguin\.co\.uk$" name=".+" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

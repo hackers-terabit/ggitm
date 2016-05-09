@@ -1,0 +1,17 @@
+<!--
+	(www.) is listening for neither https nor http.
+
+-->
+<ruleset name="contentabc.com">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="ads.contentabc.com" />
+	<target host="ads2.contentabc.com" />
+	<target host="ads11.contentabc.com" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

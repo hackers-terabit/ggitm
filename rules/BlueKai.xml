@@ -1,0 +1,45 @@
+<!--
+	Nonfunctional domains:
+
+		- (www.)bluekai.com	(times out)
+		- blogs.bluekai.com
+
+
+	Problematic subdomains:
+
+		- tags.bluekai.com	(refused)
+
+
+	Fully covered domains:
+
+		- bluekai.com subdomains:
+
+			- stags
+			- tags	(→ stags)
+
+
+	^bkrtx.com doesn't exist.
+
+-->
+<ruleset name="BlueKai (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="tags.bkrtx.com" />
+	<target host="www.bkrtx.com" />
+
+	<target host="partner.bluekai.com" />
+	<target host="stags.bluekai.com" />
+
+	<!--	Complications:
+				-->
+	<target host="tags.bluekai.com" />
+
+
+	<rule from="^http://tags\.bluekai\.com/"
+		to="https://stags.bluekai.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

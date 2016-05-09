@@ -1,0 +1,36 @@
+<!--
+	BT Group
+
+	Other BT Group rulesets:
+
+		- BT.xml
+		- BT.co.uk.xml
+		- BT_Sport.xml
+		- BT_Sport_for_Business.xml
+		- BT_Wholesale.com.xml
+		- BT_Wi-fi.xml
+		- Dabs.xml
+		- Openreach.co.uk.xml
+		- Superfast-Openreach.co.uk.xml
+
+
+	Mixed content:
+
+		- Images on (www.)? from www.btplc.com *
+
+	* Secured by us
+
+-->
+<ruleset name="BT PLC.com">
+
+	<target host="btplc.com" />
+	<target host="www.btplc.com" />
+
+
+	<securecookie host="^\w" name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,66 @@
+<!--
+	Other BuzzFeed rulesets:
+
+		- buzzfed.com.xml
+
+
+	CDN buckets:
+
+		- buzzfeed-static.s3.amazonaws.com
+
+		- wac.09fc.edgecastcdn.net/??09FC/
+
+			- s3-ec.buzzfed.com
+			- ct.buzzfeed.com
+
+		- s.buzzfeed.com.edgesuite.net
+
+			- pglb.buzzfed.com
+			- s.buzzfed.com
+			- s3-ak.buzzfed.com
+			- s3-ak.buzzfeed.com
+
+
+	Nonfunctional hosts in *buzzfeed.com:
+
+		- ct ⁴
+
+	⁴ 404
+
+
+	^buzzfeed.com: Refused
+
+
+	Insecure cookies are set for these domains:
+
+		- .buzzfeed.com
+
+-->
+<ruleset name="BuzzFeed.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="img.buzzfeed.com" />
+	<target host="s3-ak.buzzfeed.com" />
+	<target host="webappstatic.buzzfeed.com" />
+	<target host="www.buzzfeed.com" />
+
+	<!--	Complications:
+				-->
+	<target host="buzzfeed.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.buzzfeed\.com$" name="^(?:bf-browser-language|bf-geo-country)$" /-->
+
+	<securecookie host="^\w" name="." />
+
+
+	<rule from="^http://buzzfeed\.com/"
+		to="https://www.buzzfeed.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

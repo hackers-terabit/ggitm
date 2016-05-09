@@ -1,0 +1,53 @@
+<!--
+	CDN buckets:
+
+		- cpmstar.vo.llnwd.net
+
+			- cdn
+
+
+	Problematic subdomains:
+
+		- cdn	(400, CN: *.hs.llnwd.net)
+
+
+	Fully covered subdomains:
+
+		- cdn	(→ server)
+
+
+	Insecure cookies are set for these domains and hosts:
+
+		- ssl.cdne.cpmstar.com
+		- .server.cpmstar.com
+
+-->
+<ruleset name="CPMStar.com">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="cpmstar.com" />
+	<target host="ssl.cdne.cpmstar.com" />
+	<target host="server.cpmstar.com" />
+	<target host="www.server.cpmstar.com" />
+	<target host="www.cpmstar.com" />
+
+	<!--	Complications:
+				-->
+	<target host="cdn.cpmstar.com" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.server\.cpmstar\.com$" name="^(USER_ID|n15)$" /-->
+
+	<securecookie host="^\.server\.cpmstar\.com$" name=".+" />
+
+
+	<rule from="^http://cdn\.cpmstar\.com/"
+		to="https://server.cpmstar.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

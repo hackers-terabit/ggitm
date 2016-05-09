@@ -1,0 +1,28 @@
+<!--
+	Non-functional domain:
+		- (www.)promobay.org	(hostname mismatch, CN: *.webfaction.com, webfaction.com)
+-->
+
+<ruleset name="The Pirate Bay">
+
+	<target host="thepiratebay.se" />
+	<target host="www.thepiratebay.se" />
+	<target host="thepiratebay.org" />
+	<target host="www.thepiratebay.org" />
+	<target host="pirates-forum.org" />
+	<target host="www.pirates-forum.org" />
+	<target host="kanyebay.com" />
+	<target host="www.kanyebay.com" />
+
+	<!-- Should probably split the proxy stuff out to a separate module and cover all the proxies listed at thepiratebay-proxylist.org -->
+	<target host="proxybay.la" />
+	<target host="www.proxybay.la" />
+
+	<target host="thepiratebay-proxylist.org" />
+	<target host="www.thepiratebay-proxylist.org" />
+
+	<securecookie host=".+" name=".+" />
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

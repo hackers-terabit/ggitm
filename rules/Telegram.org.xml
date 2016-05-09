@@ -1,0 +1,20 @@
+<!--
+	Other Telegram rulesets:
+
+		- Tdesktop.com.xml
+		- Telegram.me.xml
+
+-->
+<ruleset name="Telegram.org">
+
+	<target host="telegram.org" />
+	<target host="core.telegram.org" />
+	<target host="desktop.telegram.org" />
+	<target host="web.telegram.org" />
+	<target host="www.telegram.org" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

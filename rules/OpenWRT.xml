@@ -1,0 +1,43 @@
+<!--
+	Nonfunctional hosts in *openwrt.org:
+
+		- git ¹
+		- kamikaze ²
+
+	¹ Refused
+	² Shows www.openwrt.org
+
+
+	Insecure cookies are set for these hosts:
+
+		- openwrt.org
+		- forum.openwrt.org
+		- wiki.openwrt.org
+
+-->
+<ruleset name="OpenWRT.org (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="openwrt.org" />
+	<target host="dev.openwrt.org" />
+	<target host="downloads.openwrt.org" />
+	<target host="forum.openwrt.org" />
+	<target host="lists.openwrt.org" />
+	<target host="wiki.openwrt.org" />
+	<target host="www.openwrt.org" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^(forum\.)?openwrt\.org$" name="^PHPSESSID$" /-->
+	<!--securecookie host="^wiki\.openwrt\.org$" name="^bb2_screener_$$" /-->
+
+	<securecookie host="." name="." />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+
+</ruleset>

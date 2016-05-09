@@ -1,0 +1,13 @@
+<!--
+	Other Robtex rulesets:
+
+		- Robtex.net.xml
+
+-->
+<ruleset name="RobTex">
+    <target host="robtex.com" />
+    <target host="*.robtex.com" />
+
+    <rule from="^http:"
+        to="https:" />
+</ruleset>

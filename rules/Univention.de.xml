@@ -1,0 +1,38 @@
+<!--
+	Problematic subdomains:
+
+		- piwik		(cert only matches www.piwik)
+
+
+	Insecure cookies are set for these hosts:
+
+		- univention.de
+
+-->
+<ruleset name="Univention.de">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="univention.de" />
+	<target host="www.piwik.univention.de" />
+	<target host="www.univention.de" />
+
+	<!--	Complications:
+				-->
+	<target host="piwik.univention.de" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^univention\.de$" name="^(?:PHPSESSID|em_transient_id)$" /-->
+
+	<securecookie host="^www\.univention\.de$" name=".+" />
+
+
+	<rule from="^http://piwik\.univention\.de/"
+		to="https://www.piwik.univention.de/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

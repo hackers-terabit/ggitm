@@ -1,0 +1,12 @@
+<ruleset name="porvoo.fi">
+	<target host="www.porvoo.fi" />
+	<target host="porvoo.fi" />
+
+	<!-- This domain sets very bizarre cookies. -->
+	<securecookie host="^\.?(?:www)?\.?porvoo\.fi" name=".*" />
+
+	<rule from="^http://porvoo\.fi/"
+		to="https://www.porvoo.fi/" />
+	<rule from="^http:"
+		to="https:" />
+</ruleset>

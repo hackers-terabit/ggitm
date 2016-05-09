@@ -1,0 +1,18 @@
+<!--
+	(www.)?: Reset
+
+-->
+<ruleset name="IABM" default_off="connection reset">
+
+	<target host="theiabm.org"/>
+	<target host="www.theiabm.org"/>
+
+
+	<securecookie host="^www\.theiabm\.org$" name=".*"/>
+
+
+	<!--	Cert doesn't match !www.	-->
+	<rule from="^http://(?:www\.)?theiabm\.org/"
+		to="https://www.theiabm.org/"/>
+
+</ruleset>

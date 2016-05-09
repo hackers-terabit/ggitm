@@ -1,0 +1,9 @@
+<ruleset name="Movable Type.com">
+
+	<target host="movabletype.com" />
+	<target host="www.movabletype.com" />
+
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

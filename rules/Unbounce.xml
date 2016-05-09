@@ -1,0 +1,56 @@
+<!--
+	CDN buckets:
+
+		- s3.amazonaws.com/assets.unbounce.com/
+		- d2xxq4ijfwetlm.cloudfront.net
+		- unbouncepages-com.s3.amazonaws.com | d9hhrg4mnvzow.cloudfront.net
+		- unbounce.wpengine.netdna-cdn.com
+
+
+	(www.)?unbounce.com: WP Engine
+
+-->
+<ruleset name="Unbounce.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="app.unbounce.com" />
+	<target host="assets.unbounce.com" />
+	<target host="go.unbounce.com" />
+
+	<!--	Complications:
+				-->
+	<target host="ubounce.wpengine.netdna-cdn.com" />
+
+	<target host="unbounce.com" />
+	<target host="www.unbounce.com" />
+
+		<!--	Avoid user-visible paths:
+						-->
+		<exclusion pattern="^http://(?:www\.)?unbounce\.com/(?!\?mcsf_action=main_css|photos/|wp-content/)" />
+
+			<!--	+ve:
+					-->
+			<test url="http://unbounce.com/blog/" />
+			<test url="http://unbounce.com/features/" />
+			<test url="http://www.unbounce.com/partner/" />
+			<test url="http://www.unbounce.com/pricing/" />
+
+			<!--	-ve:
+					-->
+			<test url="http://unbounce.com/wp-content/plugins/contact-form-7/includes/css/styles.css" />
+			<test url="http://unbounce.com/wp-content/themes/unbounce2015/assets/img/fixed-logo.png" />
+			<test url="http://unbounce.com/photos/empowerbg-366x250.jpg" />
+
+
+	<!--securecookie host="^\.unbounce\.com$" name="^_lp-webapp_session$" /-->
+	<securecookie host="^go\.unbounce\.com$" name=".+" />
+
+
+	<rule from="^http://(?:www\.)?unbounce(?:\.wpengine\.netdna-cdn)?\.com/"
+		to="https://unbounce.wpengine.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

@@ -1,0 +1,13 @@
+<!--	!functional:
+		news.consumeraffairs.com	(cert: www.consumeraffairs.com; 404)
+-->
+<ruleset name="ConsumerAffairs.com (partial)">
+
+	<target host="consumeraffairs.com"/>
+	<target host="www.consumeraffairs.com"/>
+
+	<securecookie host="^(?:.*\.)?consumeraffairs\.com$" name=".*"/>
+
+	<rule from="^http:" to="https:" />
+
+</ruleset>

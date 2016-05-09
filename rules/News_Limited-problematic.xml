@@ -1,0 +1,13 @@
+<!--
+	For rules that are on by default, see News_Limited.xml.
+
+-->
+<ruleset name="News Limited (problematic)" default_off="Akamai">
+
+	<target host="*.video.news.com.au" />
+
+
+	<rule from="^http://(player|static)\.video\.news\.com\.au/"
+		to="https://$1.video.news.com.au/" />
+
+</ruleset>

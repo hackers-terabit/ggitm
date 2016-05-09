@@ -1,0 +1,22 @@
+<!--
+	Nonfunctional hosts in *archive.is:
+
+		- blog *
+
+	* tumblr
+-->
+<ruleset name="Archive.is (partial)">
+
+	<target host="archive.today" />
+	<target host="blog.archive.today" />
+	<target host="www.archive.today" />
+	<target host="archive.is" />
+	<target host="www.archive.is" />
+	<target host="archive.li" />
+	<target host="blog.archive.li" />
+	<target host="www.archive.li" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

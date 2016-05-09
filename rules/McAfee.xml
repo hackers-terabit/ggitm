@@ -1,0 +1,84 @@
+<!--
+	For other Intel coverage, see Intel.xml.
+
+
+	Av vendor. promos.mcafee.com lacks https
+
+
+	Insecure cookies are set for these domains and hosts:
+
+		- .mcafee.com
+		- kc.mcafee.com
+
+-->
+<ruleset name="McAfee.com (partial)">
+
+	<!--	Direct rewrites:
+				-->
+	<target host="mcafee.com" />
+	<target host="beta.mcafee.com" />
+	<target host="blogs.mcafee.com" />
+	<target host="community.mcafee.com" />
+	<target host="home.mcafee.com" />
+	<target host="images.mcafee.com" />
+	<target host="secureimages.mcafee.com" />
+	<target host="kc.mcafee.com" />
+	<target host="service.mcafee.com" />
+	<target host="shop.mcafee.com" />
+	<target host="us.mcafee.com" />
+	<target host="www.mcafee.com" />
+
+		<!--	At least the homepage redirects to http.
+								-->
+		<exclusion pattern="^http://service\.mcafee\.com/(?!CSS/|css/|images/|locale/|(?:Script|Web)Resource\.axd)" />
+
+			<!--	+ve:
+					-->
+			<test url="http://service.mcafee.com/Default.aspx" />
+			<test url="http://service.mcafee.com//Default.aspx" />
+			<test url="http://service.mcafee.com/FAQDocument.aspx" />
+			<test url="http://service.mcafee.com/MobileSupportHome.aspx" />
+			<test url="http://service.mcafee.com/faq/country.html" />
+			<test url="http://service.mcafee.com/faqdocument.aspx" />
+
+			<!--	-ve:
+					-->
+			<test url="http://service.mcafee.com/css/screen.css" />
+			<test url="http://service.mcafee.com/images/logo-header.png" />
+
+		<!--	Redirects to http
+					-->
+		<!--exclusion pattern="^http://www\.mcafee\.com/(?:$|error-pages/404\.aspx|us/$)" /-->
+		<!--
+			Exceptions:
+					-->
+		<exclusion pattern="^http://www\.mcafee\.com/+(?!favicon\.ico|img/|static/|\w\w/img/)" />
+
+			<!--	+ve:
+					-->
+			<test url="http://www.mcafee.com/us/business-home.aspx" />
+			<test url="http://www.mcafee.com/us/partners.aspx" />
+			<test url="http://www.mcafee.com/us/products/data-center-security/index.aspx" />
+			<test url="http://www.mcafee.com/us/products/email-and-web-security/index.aspx" />
+			<test url="http://www.mcafee.com/us/products/network-security-platform.aspx" />
+
+			<!--	-ve:
+					-->
+			<test url="http://www.mcafee.com/favicon.ico" />
+			<test url="http://www.mcafee.com/img/logo-intel-security.png" />
+			<test url="http://www.mcafee.com/static/css/screen_small.css" />
+			<test url="http://www.mcafee.com/us/img/logo-mcafee-shield.png" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^\.mcafee\.com$" name="^(?:AffID|Currency|HPrst|HRntm|Locale|SessionInfo|SiteID|lUsrCtxPersist|lUsrCtxSession||langid|session_data)$" /-->
+	<!--securecookie host="^kc\.mcafee\.com$" name="^(JSESSIONID|OAMAuthnCookie_kc\.mcafee\.com:443|ROUTEID)$" /-->
+
+	<securecookie host=".+\.mcafee\.com$" name=".+" />
+
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>

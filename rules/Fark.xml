@@ -1,0 +1,36 @@
+<!--
+	Disabled per https://trac.torproject.org/projects/tor/ticket/15763
+	Some pages redirect to http
+
+
+
+	Nonfunctional fark.com subdomains:
+
+		- beerspill
+
+
+	Problematic subdomains:
+
+		- ^	(mismatched)
+
+-->
+<ruleset name="Fark (partial)" default_off="Breaks form submission">
+
+	<target host="fark.com" />
+	<target host="*.fark.com" />
+	<target host="img.fark.net" />
+
+
+	<securecookie host="^(?:gw|shop)\.fark\.com$" name=".+" />
+
+
+	<rule from="^http://(?:www\.)?fark\.com/(blog|comments/|feedback|forgotpassword|ll$|newuser|psbrowser|quiz|submit/|users)"
+		to="https://www.fark.com/$1" />
+
+	<rule from="^http://(app|beta|gw|m|shop|ssl|(?:m\.)?total)\.fark\.com/"
+		to="https://$1.fark.com/" />
+
+	<rule from="^http://img\.fark\.net/"
+		to="https://img.fark.net/" />
+
+</ruleset>

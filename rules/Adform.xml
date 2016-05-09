@@ -1,0 +1,78 @@
+<!--
+	Problematic domains:
+
+		- adform.com	(cert only matches www)
+
+
+	Fully covered domains:
+
+		- (www.)adform.com	(^ → www)
+
+		- adform.net subdomains:
+
+			- a1
+			- adx
+			- asia
+			- cp
+			- files
+			- s[12]
+			- server
+			- track
+			- us
+
+		- s[12].adformdsp.net
+		- server.adformdsp.net
+
+
+	Insecure cookies are set for these hosts:
+
+		- track.adform.net
+
+-->
+<ruleset name="Adform">
+
+	<target host="adform.com" />
+	<target host="www.adform.com" />
+
+	<target host="a1.adform.net" />
+	<target host="adx.adform.net" />
+	<target host="asia.adform.net" />
+	<target host="cp.adform.net" />
+	<target host="files.adform.net" />
+	<target host="s1.adform.net" />
+	<target host="s2.adform.net" />
+	<target host="server.adform.net" />
+	<target host="track.adform.net" />
+	<target host="us.adform.net" />
+	
+	<target host="s1.adformdsp.net" />
+	<target host="s2.adformdsp.net" />
+	<target host="server.adformdsp.net" />
+
+		<test url="http://track.adform.net/Serving/TrackPoint/?pm=&amp;lid=" />
+
+
+	<!--	Not secured by server:
+					-->
+	<!--securecookie host="^track\.adform\.net$" name="^C$" /-->
+
+	<securecookie host="^www\.adform\.com$" name=".+" />
+	<!--
+		name="^(GCM|TPC|uid)$"
+					-->
+	<securecookie host="^\.adform\.net$" name=".+" />
+	<securecookie host="^track\.adform\.net$" name=".+" />
+	<!--
+		name="^uid$"
+				-->
+	<securecookie host="^\.adformdsp\.net$" name=".+" />
+	<securecookie host="^server\.adformdsp\.net$" name=".+" />
+
+
+	<rule from="^http://adform\.com/"
+		to="https://www.adform.com/" />
+
+	<rule from="^http:"
+		to="https:" />
+
+</ruleset>
