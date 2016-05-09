@@ -64,7 +64,7 @@ void drop_privs () {
   setgid (65533);
   setuid (65534);
   scmp_filter_ctx ctx;
-  ctx = seccomp_init (SCMP_ACT_KILL);
+  ctx = seccomp_init (SCMP_ACT_ALLOW);
 
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (poll), 0);
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (read), 0);
@@ -101,6 +101,8 @@ void drop_privs () {
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (setgid), 0);
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (prctl), 0);
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (arch_prctl), 0);
+  ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (getdents), 0);
+  ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (openat), 0);
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (seccomp), 0);
 
   ret += seccomp_rule_add (ctx, SCMP_ACT_ALLOW, SCMP_SYS (ioctl), 1, SCMP_A1 (SCMP_CMP_EQ, (int) SIOCGIFMTU));
@@ -159,7 +161,8 @@ void print_usage () {
      "-T <1-65535>                 the HTTPS port it will attempt to redirect to\r\n"
      "-H <1-65535>                 the HTTP port it will attempt to intercept for redirection\r\n"
      "-w /path/whitelist           file system path to a file containing line separated entries of whitelisted domains\r\n"
-     "-b /path/blacklist           file system path to a file containing line separated entries of blacklisted domains\r\n");
+     "-b /path/blacklist           file system path to a file containing line separated entries of blacklisted domains\r\n"
+     "-r /path/rule/               file system path to a directory containing httpseverywhere compatible xml rules\r\n");
 }
 int parse_args (int argc, char **argv, struct global_settings *g) {
   char c;
@@ -169,8 +172,9 @@ int parse_args (int argc, char **argv, struct global_settings *g) {
   char mode[32];
   char wl_path[256] = "";
   char bl_path[256] = "";
+  char rl_path[256] = "";
 
-  while ((c = getopt (argc, argv, ":hd:i:o:T:H:m:w:b:")) != -1) {
+  while ((c = getopt (argc, argv, ":hd:i:o:T:H:m:w:b:r:")) != -1) {
     switch (c) {
     case 'd':
       debug = atoi (optarg);
@@ -204,6 +208,9 @@ int parse_args (int argc, char **argv, struct global_settings *g) {
     case 'b':
       strncpy (bl_path, optarg, 256);
       break;
+    case 'r':
+      strncpy (rl_path, optarg, 256);
+      break;
     default:
       print_usage ();
       die (1, "Error parsing config\n");
@@ -222,6 +229,8 @@ int parse_args (int argc, char **argv, struct global_settings *g) {
   global.https_port = t;
 
   logg ("HTTP port:%i \r\nHTTPS port:%i\r\n", global.http_port, global.https_port);
+  if (strlen (global.interface_in) < 2)
+      strncpy (global.interface_in, default_interface, IFNAMSIZ);
 
   if (strlen (mode) < 2)
     strncpy (mode, "ol", 3);
@@ -255,8 +264,14 @@ int parse_args (int argc, char **argv, struct global_settings *g) {
   else
     strncpy (global.blacklist, bl_path, 256);
 
+  if (strlen (rl_path) < 2)
+    strncpy (global.rulepath, "./rules", strlen ("./rules"));
+  else
+    strncpy (global.rulepath, rl_path, 256);
+
   logg ("White-list file path set to %s", global.whitelist);
   logg ("Black-list file path set to %s", global.blacklist);
+  logg ("XML rule  path set to %s", global.rulepath);
 
   printf ("\r\n---------------------------------------------------\r\n");
   return 0;
@@ -327,7 +342,7 @@ void load_hostlist (FILE * f, int type) {
     memcpy (entry->host, line, LINE_LEN);
     switch (type) {
     case WL:
-      entry->state = REDIRECT_FOUND;
+      entry->state = REDIRECT_BWL_FOUND;
       break;
     default:
     case BL:

@@ -34,10 +34,13 @@
 
 #define HEADER_DEPTH 512        // how many bytes into any packet's payload we'll look
 
-#define REDIRECT_FOUND 200
-#define REDIRECT_NEW  300
-#define REDIRECT_EXPIRED 400
+#define REDIRECT_BWL_FOUND 200  //BWL == black white list
+#define REDIRECT_RULE_FOUND 300
+#define REDIRECT_NEW  400
+#define REDIRECT_EXPIRED 500
 #define REDIRECT_DENIED 9999
+
+static const char *default_interface = "eth0";
 
 struct HDB {
   char host[LINE_LEN];

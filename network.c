@@ -137,6 +137,7 @@ void capture_loop (struct global_settings global) {
   pfd.fd = global.af_socket;
   pfd.events = POLLIN;
   drop_privs ();
+  debug (3, "Initialization complete,packet processing is starting now.");
   while (global.run) {
     memset (packetv4->ethernet_frame, 0, packetv4->mtu);
     poll (&pfd, 1, -1);

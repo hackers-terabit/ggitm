@@ -17,6 +17,7 @@ struct global_settings {
   char interface_out[IFNAMSIZ];
   char blacklist[256];
   char whitelist[256];
+  char rulepath[256];
   int http_port;
   int https_port;
   int af_socket;

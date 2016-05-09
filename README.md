@@ -60,7 +60,7 @@ HTTP TCP session.
     Do you (as a user) really want to configure apache,iptables or some other OS firewall,write a script
     to keep up with it all,white list stuff,etc...(assuming that approach actually works)?
     
-    This application is meant to be as much "pont and click" as possible,you do not need to change any OS
+    This application is meant to be as much "point and click" as possible,you do not need to change any OS
     configuration, just point it at an interface that sees the target traffic (could be a copy) and allow it to responds
     to the originator of the traffic. some users may not be able to configure ggitm on a device that forwards
     their traffic, but they are able to copy the traffic to a box running ggitm.
