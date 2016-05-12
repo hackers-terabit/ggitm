@@ -33,14 +33,16 @@
 #define BL 5511
 
 #define HEADER_DEPTH 512        // how many bytes into any packet's payload we'll look
-
+#define URL_MAX 2000 // MS/IE have this at 2083,just to round it out since we may add / to the end in the response
+#define CACHE_MAX 100000 // 100k cache entries by default
 #define REDIRECT_BWL_FOUND 200  //BWL == black white list
 #define REDIRECT_RULE_FOUND 300
 #define REDIRECT_NEW  400
 #define REDIRECT_EXPIRED 500
-#define REDIRECT_DENIED 9999
+#define REDIRECT_DENIED 789
 
 static const char *default_interface = "eth0";
+uint64_t hashkey;
 
 struct HDB {
   char host[LINE_LEN];
@@ -68,8 +70,8 @@ void compute_tcp_checksum (struct iphdr *pIph, unsigned short *ipPayload);
 int parse_args (int argc, char **argv, struct global_settings *g);
 void print_usage ();
 unsigned short csum (unsigned short *buf, int nwords);
-
+void trim(char **str);
 long checksum (unsigned short *addr, unsigned int count);
-
+uint64_t rand_uint64_slow(void);
 
 #endif

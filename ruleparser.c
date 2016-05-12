@@ -16,7 +16,7 @@ void load_rules (char *path) {
   while (e = readdir (dir)) {
     if (strncasecmp (&e->d_name[strlen (e->d_name) - 4], ".xml", 4) == 0) {
       snprintf (filepath, 1024, "%s/%s", path, e->d_name);
-      debug (6, "Found rule file %s\r\n", filepath);
+   //   debug (6, "Found rule file %s\r\n", filepath);
       parsexmlfile (filepath);
     }
   }
@@ -35,7 +35,7 @@ void parsexmlfile (char *path) {
   if (reader == NULL)
     die (0, "Unable to parse rule file %s\r\n", path);
   else {
-    debug (6, "Processing rule file %s\r\n", path);
+   // debug (6, "Processing rule file %s\r\n", path);
     while (xmlTextReaderRead (reader)) {
       rule = malloc (sizeof (struct rules));
       if (rule == NULL)
@@ -51,7 +51,7 @@ void parsexmlfile (char *path) {
       }
     }
     if (xmlTextReaderIsValid (reader) != 1) {
-      debug (7, "Rule file %s does not validate\r\n", path);
+     // debug (7, "Rule file %s does not validate\r\n", path);
     }
     xmlFreeTextReader (reader);
 
@@ -84,7 +84,7 @@ int load_xml_ruleset (xmlTextReaderPtr reader, struct rules *rule) {    // this 
 
       if (strncasecmp ("name", name, 4) == 0) {
         if (strlen (value) > 0) {
-          debug (6, "\tRuleset - %s\r\n", value);
+         // debug (6, "\tRuleset - %s\r\n", value);
           strncpy (rule->name, value, 256);
         }
 
@@ -106,9 +106,9 @@ int load_xml_ruleset (xmlTextReaderPtr reader, struct rules *rule) {    // this 
           if (strncasecmp ("host", name, 4) == 0) {
             if (strlen (value) > 0) {
               if (rule->target_count >= (MAX_REGEX - 1)) {
-                debug (6, "Error found a rule with target count greater than configured maximum of %i\r\n", MAX_REGEX);
+              //  debug (6, "Error found a rule with target count greater than configured maximum of %i\r\n", MAX_REGEX);
               } else {
-                debug (6, "\t\tTarget -  %s\r\n", value);
+            //    debug (6, "\t\tTarget -  %s\r\n", value);
                 rule->targets[++rule->target_count] = make_target (value);
               }
             }
@@ -122,13 +122,13 @@ int load_xml_ruleset (xmlTextReaderPtr reader, struct rules *rule) {    // this 
             name = BAD_CAST "--";
           if (strncasecmp ("from", name, 4) == 0) {
             if (strlen (value) > 0) {
-              debug (6, "\t\tFrom - %s\r\n", value);
+        //      debug (6, "\t\tFrom - %s\r\n", value);
               strncpy (from, value, 2048);
             }
           }
           if (strncasecmp ("to", name, 2) == 0) {
             if (strlen (value) > 0) {
-              debug (6, "\t\tTo - %s\r\n", value);
+       //       debug (6, "\t\tTo - %s\r\n", value);
               strncpy (to, value, 2048);
             }
           }
@@ -163,15 +163,25 @@ pcre *make_target (const char *target) {
   //yes in case you were wondering I copy pasted this from 
   //https://stackoverflow.com/questions/1421785/how-can-i-use-pcre-to-get-all-match-groups
   const char *error;
+  char newtarget[20000];
   int erroffset;
   pcre *re;
-
+if(target[0]!='*'){
   re = pcre_compile (target,    /* the pattern */
                      PCRE_MULTILINE, &error,    /* for error message */
                      &erroffset,        /* for error offset */
                      0);        /* use default character tables */
+}else{
+  snprintf(newtarget,2083,".%s",target); //it really sucks that I have to do this but some people refuse to be pcre compatible :-/
+  
+    re = pcre_compile (newtarget,    /* the pattern */
+                     PCRE_MULTILINE, &error,    /* for error message */
+                     &erroffset,        /* for error offset */
+                     0);        /* use default character tables */
+  
+}
   if (!re) {
-    debug (6, "pcre_compile failed (offset: %d), %s\n", erroffset, error);
+    debug (6, "pcre_compile failed target:%s (offset: %d), %s\n", target,erroffset, error);
     return NULL;
   }
 

@@ -27,11 +27,19 @@
 #include <stdio.h>
 #include <netdb.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "main.h"
 #include "util.h"
+
+#ifndef PACKET_FANOUT
+# define PACKET_FANOUT                  18
+# define PACKET_FANOUT_HASH             0
+# define PACKET_FANOUT_LB               1
+#endif
+
 //sets up the interface and af_packet
-int ifup (char *interface);
+int ifup (char *interface,int direction);
 //reverse of above
 int ifdown (char *interface);
 
@@ -52,8 +60,9 @@ Eventually capture_loop should query a socket or signal to suspend operations wh
 passthrough all packets without querying dnsmap or ggitm.
 
 */
-void capture_loop (struct global_settings global);
-
+void *capture_loop (void *arg);
+void start_loops();
+void *copy_loop(void *arg);
 void get_interface (char *if_name, struct ifreq *ifr, int d);
 /* left this here for referecne while coding
  00169 struct iphdr {

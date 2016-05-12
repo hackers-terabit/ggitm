@@ -119,6 +119,28 @@ void drop_privs () {
   seccomp_release (ctx);
 
 }
+void trim(char **str){
+ char *s=*str;
+ if(s==NULL) return;
+ int len=strlen(s),newlen;
+  if(len<2)return;
+ int i=(len-1);
+for(i;i>1;i--){
+ if (!(s[i]=='/' && s[i-1]=='/'))break;
+ else s[i]='\0';  
+
+}
+
+}
+uint64_t rand_uint64_slow(void) {
+  srand(time(NULL));
+  uint64_t r = 0;
+int i=0;
+  for (i=0; i<64; i++) {
+    r = r*2 + rand()%2;
+  }
+  return r;
+}
 
 void signal_handler (int signal) {
 
@@ -143,6 +165,8 @@ void signal_handler (int signal) {
   case SIGTTOU:
   case SIGPROF:
     debug (4, "Profiling has started\n");
+    break;
+  case 33:
     break;
   default:
     die (1, "Houston We have a problem!!\n");
@@ -352,6 +376,21 @@ void load_hostlist (FILE * f, int type) {
     list_add (&(entry->L), &(HL.L));
     ++i;
   }
+}
+inline int atomic_lock( int *L){
+ return __sync_val_compare_and_swap(L,0,1); 
+}
+
+inline int atomic_unlock( int *L){
+ return __sync_val_compare_and_swap(L,1,0); 
+}
+inline uint64_t string_to_hash(char *s){
+  uint64_t hash;
+  unsigned int s_len=strlen(s);
+  if(s==NULL || s_len<2) return 0;
+  
+    crypto_auth((unsigned char *)&hash, s, s_len, (const unsigned char*)&hashkey );
+return hash;
 }
 void compute_tcp_checksum (struct iphdr *pIph, unsigned short *ipPayload) {
   register unsigned long sum = 0;

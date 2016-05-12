@@ -1,6 +1,8 @@
 #include "main.h"
 #include "util.h"
 #include "ruleparser.h"
+#include "ggitm.h"
+
 int main (int argc, char **argv) {
   int i = 0;
 
@@ -13,16 +15,21 @@ int main (int argc, char **argv) {
     signal (i, signal_handler); //Setup signal handler
 
   parse_args (argc, argv, &global);
-  INIT_LIST_HEAD (&HL.L);
+  
+  INIT_LIST_HEAD (&HL.L); //probably don't need this atm
   INIT_LIST_HEAD (&RL.L);
-  curl_global_init (CURL_GLOBAL_DEFAULT);
+  INIT_LIST_HEAD (&CL.L);
 
+  curl_global_init (CURL_GLOBAL_DEFAULT);
+   global.cpu_available=sysconf(_SC_NPROCESSORS_CONF);
+  hashkey=rand_uint64_slow();
   load_whitelist (global.whitelist);
   load_blacklist (global.blacklist);
   load_rules (global.rulepath);
-//TODO stuff :| maybe fork() around a bit once af_packet fanout is in effect?
-  ifup (global.interface_in);
-  capture_loop (global);
+  ifup (global.interface_in,1);
+  if(!global.mode)
+    ifup (global.interface_out,0);
+  start_loops(); // start threads to copy traffic
   ifdown (global.interface_in);
   curl_global_cleanup ();
 

@@ -1,7 +1,7 @@
 # ggitm
 Good guy in the middle - transparent HTTPS redirection 
 
-This project is currently  under initial development.
+### WARNING:This project is currently under development and testing,there are bugs and incomplete feautres.
 
 ## Description
 

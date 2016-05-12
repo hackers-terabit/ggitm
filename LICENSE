@@ -1,0 +1,11 @@
+This project is licensed under the WTFPL (www.wtfpl.net/txt/copying/) or create commons public domain CC0 License (https://creativecommons.org/publicdomain/zero/1.0/).
+
+With the exception of the following source code files which have their own license and copyright reservations, 
+you may use source code found under this project with either WTFPL or CC0 license.
+
+Files with a separate license and copyright notice:
+pcrs/pcrs.c
+pcrs/pcrs.h
+siphash24.c
+list.h
+

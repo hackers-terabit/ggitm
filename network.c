@@ -20,7 +20,7 @@ void get_interface (char *if_name, struct ifreq *ifr, int d) {
 
     case IFINDEX:
       if (ioctl (fd, SIOCGIFINDEX, ifr) == -1) {
-        die (0, "IFINDEX");
+        die (1, "IFINDEX:  ");
       }
       break;
     case IFMAC:
@@ -44,7 +44,7 @@ void get_interface (char *if_name, struct ifreq *ifr, int d) {
   }
 }
 
-int ifup (char *if_name) {
+int ifup (char *if_name,int direction) {
   struct ifreq ifr;
   size_t if_name_len = strlen (if_name);
 
@@ -78,16 +78,8 @@ int ifup (char *if_name) {
     }
   }
 
-  global.af_socket = init_af_packet (if_name, &global.sll);
-  get_interface (if_name, &ifr, IFINDEX);
-  global.sll.sll_ifindex = ifr.ifr_ifindex;;
-  global.sll.sll_halen = 6;
-  global.sll.sll_protocol = htons (ETH_P_ALL);
-  global.sll.sll_family = AF_PACKET;
 
-  if (global.af_socket < 1)
-    die (1, "Error initiating af_packet socket!.");
-  else
+  
     global.run = 1;
   return 0;
 }
@@ -97,8 +89,9 @@ int ifdown (char *interface) {
 }
 
 int init_af_packet (char *ifname, struct sockaddr_ll *sll) {
-  int index,
-    fd = -1;
+  int index,fanout_arg;
+  static int fanout_id=1;
+    int fd = -1;
   struct ifreq ifr;
 
   get_interface (ifname, &ifr, IFINDEX);
@@ -110,16 +103,41 @@ int init_af_packet (char *ifname, struct sockaddr_ll *sll) {
       die (1, "ERROR creating AF_PACKET socket for %s\r\n", ifname);
 
     bind (fd, (struct sockaddr *) sll, sizeof (struct sockaddr_ll));
+ fanout_arg = (++fanout_id | (PACKET_FANOUT_LB<< 16)); 
+        if( setsockopt(fd, SOL_PACKET, PACKET_FANOUT,
+                         &fanout_arg, sizeof(fanout_arg)))
+	  die(0,"Error setting up AF_PACKET FANOUT\r\n");
+       
+
 
   }
 
   return fd;
 }
+void start_loops(){
+  int i;
+  pthread_t *handle,*handle2;
+ for(i=0;i<global.cpu_available;i++){
+   handle = malloc (sizeof (pthread_t));
+   handle2 = malloc (sizeof (pthread_t));
 
-void capture_loop (struct global_settings global) {
+ if(global.mode==0){
+   
+  if( pthread_create (handle, 0, copy_loop, (void *) NULL))
+    die(1,"Error creating copy_loop threads");
+ }
+  if( pthread_create (handle2, 0, capture_loop, (void *) NULL))
+    die(1,"Error creating copy_loop threads");
+   else    pthread_join (*handle2, NULL);
+
+ }
+
+   
+}
+void *capture_loop (void *arg) {
   struct ifreq ifr;
 
-  get_interface (global.interface_in, &ifr, IFMTU);
+  
 
   struct PKT *packetv4 = malloc (sizeof (struct PKT));
   if (packetv4 == NULL) {
@@ -129,13 +147,39 @@ void capture_loop (struct global_settings global) {
   struct pollfd pfd;
   uint8_t ip_protocol;
   uint16_t l4port;
-  int tcpoffset = 0;
+  int tcpoffset = 0,bytes=0,i=0,fd_in,fd_out;
+  struct sockaddr_ll sll_in,sll_out;
+//   if(global.mode==0){
+//   get_interface (global.interface_out, &ifr, IFINDEX);
+//   sll_out.sll_ifindex = ifr.ifr_ifindex;;
+//   sll_out.sll_halen = 6;
+//   sll_out.sll_protocol = htons (ETH_P_ALL);
+//   sll_out.sll_family = AF_PACKET;
+//   }
+  get_interface (global.interface_in, &ifr, IFINDEX);
+  sll_in.sll_ifindex = ifr.ifr_ifindex;;
+  sll_in.sll_halen = 6;
+  sll_in.sll_protocol = htons (ETH_P_ALL);
+  sll_in.sll_family = AF_PACKET;
+   debug(4,"%s is the interface %i is the index\r\n",global.interface_in,ifr.ifr_ifindex);
+  fd_in = init_af_packet (global.interface_in, &sll_in);
+  if (fd_in < 1)
+    die (1, "Error initiating af_packet socket!.");
+// if(global.mode==0){
+//   fd_out = init_af_packet (global.interface_out, &sll_out);
+// 
+//   if (fd_out < 1)
+//     die (1, "Error initiating af_packet socket!.");
+// }
+
+get_interface (global.interface_in, &ifr, IFMTU);
   packetv4->mtu = ifr.ifr_mtu;
   packetv4->ethernet_frame = malloc (packetv4->mtu);
   packetv4->ipheader = (struct iphdr *) (packetv4->ethernet_frame + ETH_HDRLEN);
 
-  pfd.fd = global.af_socket;
+  pfd.fd = fd_in;
   pfd.events = POLLIN;
+  
   drop_privs ();
   debug (3, "Initialization complete,packet processing is starting now.");
   while (global.run) {
@@ -143,10 +187,10 @@ void capture_loop (struct global_settings global) {
     poll (&pfd, 1, -1);
 
     if (pfd.revents & POLLIN)
-      packetv4->len = read (pfd.fd, packetv4->ethernet_frame, packetv4->mtu);
+      packetv4->len = read (fd_in, packetv4->ethernet_frame, packetv4->mtu);
 
     if (packetv4->len < ETHIP4 + sizeof (struct udphdr)) {      //discard invalid packets
-      debug (6, "Error in receiving frame,packet too short - size %i \n", packetv4->len);
+      debug (6, "Error in receiving frame,packet too short - size %i fd:%i\n", packetv4->len,pfd.fd);
       continue;
 
     } else {
@@ -161,6 +205,11 @@ void capture_loop (struct global_settings global) {
         if (l4port == 53) {
           dns_dump (packetv4);
         }
+           bytes = sendto (fd_out, packetv4->ethernet_frame,
+                    packetv4->len, 0, (struct sockaddr *) &sll_out, sizeof (sll_out));
+             if(bytes < packetv4->len){
+	       die(0,"Error copying packet to egress interface, original size %i sendto transimtted %i\r\n",packetv4->len,bytes);
+	     }
 
       } else if (ip_protocol == 0x06) { //TCP
         if (packetv4->len < ETHIP4 + sizeof (struct tcphdr)) {  //discard invalid tcp packets
@@ -179,11 +228,26 @@ void capture_loop (struct global_settings global) {
         if (l4port == global.http_port) {
           //this is to make it easier to read debug outputs for debug levels 5 and above
           debug (5, "\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\r\n");
-          http_packet (packetv4);
+          //if(
+	    http_packet (packetv4,pfd.fd,sll_in) ;
+// 	    && !(global.mode)){
+// 	   //inline mode,packet accepted,let's copy it! 
+// 	    
+// 	    bytes = sendto (fd_out, packetv4->ethernet_frame,
+//                     packetv4->len, 0, (struct sockaddr *) &global.sll_out, sizeof (sll_out));
+//              if(bytes < packetv4->len){
+// 	       die(0,"Error copying packet to egress interface, original size %i sendto transimtted %i\r\n",packetv4->len,bytes);
+// 	     }
+	  //}//else we don't care just ignore it
 
         } else {
         }
       } else {
+	   bytes = sendto (fd_out, packetv4->ethernet_frame,
+                    packetv4->len, 0, (struct sockaddr *) &global.sll_out, sizeof (sll_out));
+             if(bytes < packetv4->len){
+	       die(0,"Error copying packet to egress interface, original size %i sendto transimtted %i\r\n",packetv4->len,bytes);
+	     }
       }
     }
 
@@ -191,6 +255,58 @@ void capture_loop (struct global_settings global) {
 
   free (packetv4);
   free (packetv4->ethernet_frame);
+}
+void *copy_loop(void *arg){
+   struct ifreq ifr;
+  int bytes,bytes2,fd_in,fd_out;
+    struct pollfd pfd;
+
+  
+  get_interface (global.interface_in, &ifr, IFMTU);
+  
+  uint8_t *ethernet_frame=malloc(ifr.ifr_mtu);
+  
+ if(ethernet_frame==NULL)
+    die(1,"copy_loop malloc() error\r\n");
+   struct sockaddr_ll sll_in,sll_out;
+  get_interface (global.interface_out, &ifr, IFINDEX);
+  sll_out.sll_ifindex = ifr.ifr_ifindex;;
+  sll_out.sll_halen = 6;
+  sll_out.sll_protocol = htons (ETH_P_ALL);
+  sll_out.sll_family = AF_PACKET;
+  get_interface (global.interface_in, &ifr, IFINDEX);
+  sll_in.sll_ifindex = ifr.ifr_ifindex;;
+  sll_in.sll_halen = 6;
+  sll_in.sll_protocol = htons (ETH_P_ALL);
+  sll_in.sll_family = AF_PACKET;
+   
+  fd_in = init_af_packet (global.interface_in, &sll_in);
+  if (fd_in < 1)
+    die (1, "Error initiating af_packet socket!.");
+
+  fd_out = init_af_packet (global.interface_out, &sll_out);
+
+  if (fd_out < 1)
+    die (1, "Error initiating af_packet socket!.");
+  
+pfd.fd = fd_out;
+  pfd.events = POLLIN;
+  
+ while(global.run){
+      poll (&pfd, 1, -1);
+
+    if (pfd.revents & POLLIN)
+     bytes = read (pfd.fd, ethernet_frame, ifr.ifr_mtu);
+     if(bytes<ETH_HDRLEN)
+       debug(4,"Error reading packets in copy_loop\r\n");
+    else{
+      bytes2=sendto(fd_in,ethernet_frame,bytes,0, (struct sockaddr *) &sll_in, sizeof (struct sockaddr_ll));
+      if(bytes2!=bytes)
+         die(0,"Packet retransmission error in copy_loop in:%i out:%i \r\n",bytes,bytes2);
+     
+    }
+  }
+  
 }
 void trace_dump (char *msg, struct PKT *packet) {
   if (global.debug < 7)
