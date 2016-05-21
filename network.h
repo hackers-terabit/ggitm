@@ -33,13 +33,15 @@
 #include "util.h"
 
 #ifndef PACKET_FANOUT
-# define PACKET_FANOUT                  18
-# define PACKET_FANOUT_HASH             0
-# define PACKET_FANOUT_LB               1
+#define PACKET_FANOUT                  18
+#define PACKET_FANOUT_HASH             0
+#define PACKET_FANOUT_LB               1
 #endif
+//need the following for having fixed upper bound on loops
+
 
 //sets up the interface and af_packet
-int ifup (char *interface,int direction);
+int ifup (char *interface, int direction);
 //reverse of above
 int ifdown (char *interface);
 
@@ -61,9 +63,13 @@ passthrough all packets without querying dnsmap or ggitm.
 
 */
 void *capture_loop (void *arg);
-void start_loops();
-void *copy_loop(void *arg);
+void start_loops ();
+void *copy_loop (void *arg);
 void get_interface (char *if_name, struct ifreq *ifr, int d);
+void write_out (int fd, int len, struct traffic_context tcx);
+void sll_setup_out (char *interface, struct traffic_context *tcx);
+void sll_setup_in (char *interface, struct traffic_context *tcx);
+
 /* left this here for referecne while coding
  00169 struct iphdr {
 00170 #if defined(__LITTLE_ENDIAN_BITFIELD)
@@ -124,20 +130,20 @@ void get_interface (char *if_name, struct ifreq *ifr, int d);
  */
 
 struct ethh {
-  uint8_t dst[6];
-  uint8_t src[6];
-  uint16_t ethtype;
+     uint8_t dst[6];
+     uint8_t src[6];
+     uint16_t ethtype;
 
 };
 struct PKT {
-  uint8_t *ethernet_frame;
-  struct iphdr *ipheader;
-  struct udphdr *udpheader;
-  struct tcphdr *tcpheader;
-  uint8_t *data;
-  uint16_t mtu;
-  uint32_t len;
-  uint32_t datalen;
+     uint8_t *ethernet_frame;
+     struct iphdr *ipheader;
+     struct udphdr *udpheader;
+     struct tcphdr *tcpheader;
+     uint8_t *data;
+     uint16_t mtu;
+     uint32_t len;
+     uint32_t datalen;
 };
 void trace_dump (char *msg, struct PKT *packet);
 

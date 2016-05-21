@@ -48,6 +48,12 @@ HTTP TCP session.
      with appropriate 301 redirect packets.ool mode is less effective for servers that have less latency to the client
      than the ggitm device does and is unable to drop server response packets. 
      
+     In addition to that, with out of line mode redirects never happen on first try unless the host is part of
+     the whitelist. for urls outside the whitelisted domains,it will check whether or not HTTPS is supported on the server,
+     it will attempt to fetch the url over HTTPS,provided HTTPS certificate validation passes and the server does not respond
+     with a 301 or 302 redirect back to an http url, ggitm will start redirecting future requests for this url to it's https
+     alternative. this means users willl hve to maintain a good blacklist of sites that break as a result of this.
+    
      That being said, network performance is least impacted with out of line deployment.
      
      The default mode of operation is out of line and it should be deployed much like how an IDS (intrusion detection system)

@@ -12,22 +12,27 @@
 
 struct global_settings {
 
-  int debug;
-  int run;
-  char interface_in[IFNAMSIZ];
-  char interface_out[IFNAMSIZ];
-  int  cpu_available;
-  char blacklist[256];
-  char whitelist[256];
-  char rulepath[256];
-  int http_port;
-  int https_port;
-  int af_socket;
-  int af_socket_out;
-  int mode;
-  struct sockaddr_ll sll,sll_out;
+     int debug;
+     int run;
+     char interface_in[IFNAMSIZ];
+     char interface_out[IFNAMSIZ];
+     int cpu_available;
+     char blacklist[256];
+     char whitelist[256];
+     char rulepath[256];
+     int http_port;
+     int https_port;
+
+     int mode;
 };
 
 struct global_settings global;
 
+struct traffic_context {
+     struct PKT *pkt;
+     struct sockaddr_ll sll_in, sll_out;
+     int fd_in, fd_out;
+};
+void destroy_globals ();
+void init_globals ();
 #endif

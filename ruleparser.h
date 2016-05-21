@@ -12,11 +12,11 @@
 #define MAX_REGEX 2048          //20000 regex's per regex array, a bit high,had to bump it up from 2048 thanks to bit.ly
 
 struct rules {
-  pcrs_job *job;
-  pcre *targets[MAX_REGEX];
-  int target_count;
-  char name[256];
-  struct list_head L;
+     pcrs_job *job;
+     pcre *targets[MAX_REGEX];
+     int target_count;
+     char name[256];
+     struct list_head L;
 };
 
 struct rules RL;                //rule list
