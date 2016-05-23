@@ -7,25 +7,25 @@ void http_dump (struct PKT *pkt) {
      int i = 0;
      printf ("\n--------------------------------------------\n");
 
-     for (i=0;  i < pkt->datalen ; i++) {
+     for (i = 0; i < pkt->datalen; i++) {
           printf ("%c", pkt->data[i]);
      }
      printf ("\n--------------------------------------------\n");
 
 }
 
-inline int get_http_host (char * data, char *buf, int bufsz) {
+inline int get_http_host (char *data, char *buf, int bufsz) {
      char c;
      int i = 0;
-     if(isnull(data) || isnull_(data))
-       return 0;
+     if (isnull (data) || isnull_ (data))
+          return 0;
      char *s = strcasestr ((char *) data, "host:");
 
      if (s == NULL || (strlen (s) < 6))
           return 0;
      else {
           s = &s[6];
-          for (i=0; i < bufsz &&  i < HEADER_DEPTH; i++) {
+          for (i = 0; i < bufsz && i < HEADER_DEPTH; i++) {
                c = s[i];
                if (c == ':' || c == '\r' || c == '\n' || c == '\0' || (!isprint (c)))
                     break;
@@ -40,11 +40,11 @@ inline int get_http_host (char * data, char *buf, int bufsz) {
      return 0;
 }
 
-inline int get_http_request (char  * data, char *buf, int bufsz) {
+inline int get_http_request (char *data, char *buf, int bufsz) {
      char c;
-     int  i = 0, o;
-       if(isnull(data) || isnull_(data))
-       return 0;
+     int i = 0, o;
+     if (isnull (data) || isnull_ (data))
+          return 0;
      char *get = strcasestr ((char *) data, "GET ");
      char *head = strcasestr ((char *) data, "HEAD ");
 
@@ -59,7 +59,7 @@ inline int get_http_request (char  * data, char *buf, int bufsz) {
           o = 4;
 
      get = &get[o];
-     for (i=0;  i < bufsz - 1 && i < HEADER_DEPTH; i++) {
+     for (i = 0; i < bufsz - 1 && i < HEADER_DEPTH; i++) {
           c = get[i];
           if (c == ' ' || c == '\r' || c == '\n' || c == '\0' || (!isprint (c)))
                break;
@@ -81,7 +81,7 @@ inline struct cache *search_cache (uint64_t uhash) {
      list_for_each_safe (lh, tmp, &(global.CL.L)) {
           entry = list_entry (lh, struct cache, L);
           if (entry != NULL) {
-             //  debug (7, "%" PRIx64 " <-> %" PRIx64 "\r\n", uhash, entry->match_url);
+               //  debug (7, "%" PRIx64 " <-> %" PRIx64 "\r\n", uhash, entry->match_url);
                if (entry->match_url == uhash) {
                     atomic_unlock (&global.cache_lock);
                     return entry;
@@ -95,7 +95,8 @@ inline struct cache *search_cache (uint64_t uhash) {
 }
 inline void add_cache (char *url, uint64_t match_hash, int response) {
 
-     struct cache *cob = malloc_or_die ("malloc() failure when adding an entry to the global cache\r\n",sizeof (struct cache));
+     struct cache *cob =
+          malloc_or_die ("malloc() failure when adding an entry to the global cache\r\n", sizeof (struct cache));
 
      int url_len;
      if (url != NULL)
@@ -115,20 +116,21 @@ inline void add_cache (char *url, uint64_t match_hash, int response) {
      atomic_unlock (&global.cache_lock);
 }
 inline void del_cache (uint64_t hash) {
-    // struct list_head *lh, *tmp;
-     struct cache *entry,*clh,*ctmp;
-    // debug (7, "Deleting cache entries that match hash %" PRIx64 "\r\n", hash);
+     // struct list_head *lh, *tmp;
+     struct cache *entry, *clh, *ctmp;
+     // debug (7, "Deleting cache entries that match hash %" PRIx64 "\r\n", hash);
      while (!atomic_lock (&global.cache_lock));
-	if(list_empty(&(global.CL.L))){
-	       atomic_unlock (&global.cache_lock);
-         return;
-}
-     list_for_each_entry_safe (clh, ctmp, &(global.CL.L),L) {
+     if (list_empty (&(global.CL.L))) {
+          atomic_unlock (&global.cache_lock);
+          return;
+     }
+     list_for_each_entry_safe (clh, ctmp, &(global.CL.L), L) {
           entry = list_entry (clh, struct cache, L);
           if (entry != NULL) {
                if (entry->match_url == hash) {
                     list_del (&(entry->L));
-                   if(entry!=NULL) free_null (entry);
+                    if (entry != NULL)
+                         free_null (entry);
                }
           }
      }
@@ -136,8 +138,7 @@ inline void del_cache (uint64_t hash) {
 
 }
 int http_packet (struct traffic_context tcx) {
-     int hlen = tcx.pkt->datalen < HEADER_DEPTH ? tcx.pkt->datalen : HEADER_DEPTH - 1,
-           state = REDIRECT_DENIED;
+     int hlen = tcx.pkt->datalen < HEADER_DEPTH ? tcx.pkt->datalen : HEADER_DEPTH - 1, state = REDIRECT_DENIED;
      char host[hlen];
      char request[hlen];
      char assumed_url[hlen];
@@ -151,7 +152,7 @@ int http_packet (struct traffic_context tcx) {
      memset (assumed_url, 0, hlen);
      memset (url_https, 0, hlen);
 
-     if (get_http_host ((char *)tcx.pkt->data, host, hlen) && get_http_request ((char *)tcx.pkt->data, request, hlen)) {
+     if (get_http_host ((char *) tcx.pkt->data, host, hlen) && get_http_request ((char *) tcx.pkt->data, request, hlen)) {
           //this is to make it easier to read debug outputs for debug levels 5 and above
           debug (5, "\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\r\n");
           debug (4, "TCP seq: %x<>%x - HTTP host header found: --%s-- request |%s|\r\n",
@@ -171,8 +172,8 @@ int http_packet (struct traffic_context tcx) {
                if (cob->response == REDIRECT_RULE_FOUND) {
                     send_response (tcx, host, request, cob->redirect_url, 301);
                     kill_session (tcx);
-                    debug (4, "REDIRECT_CACHE_HIT  [1] for host %s , request=%s ; newurl=%s; 301_REDIRECT_SENT\n", host, request,
-                           cob->redirect_url);
+                    debug (4, "REDIRECT_CACHE_HIT  [1] for host %s , request=%s ; newurl=%s; 301_REDIRECT_SENT\n", host,
+                           request, cob->redirect_url);
                     return 0;
                } else if (cob->response == REDIRECT_DENIED) {
                     debug (4, "REDIRECT_CACHE_HIT [2] for host %s , request=%s ; REDIRECT_DENIED!\n", host, request);
@@ -191,7 +192,8 @@ int http_packet (struct traffic_context tcx) {
 
                          send_response (tcx, host, request, url_https, 301);
                          kill_session (tcx);
-                         debug (4, "REDIRECT_CACHE_HIT [4] for host %s ; newurl=%s; 301_REDIRECT_SENT\n", host, url_https);
+                         debug (4, "REDIRECT_CACHE_HIT [4] for host %s ; newurl=%s; 301_REDIRECT_SENT\n", host,
+                                url_https);
                          return 0;
                     } else {
                          debug (4, "REDIRECT_CACHE_HIT [5] for host %s ; newurl=%s ; REDIRECT_DENIED\n", host,
@@ -226,37 +228,37 @@ void fill_payload (char *response_payload, char *host, char *url, char *request,
      if (url == NULL) {
           if (type == 301)
                xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
-                         "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
+                        "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
           if (type == 302)
                xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
-                         "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
+                        "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
      } else {
           if (type == 301)
                xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
-                         "Location: %s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", url);
+                        "Location: %s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", url);
           if (type == 302)
                xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
-                         "Location: %s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", url);
+                        "Location: %s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", url);
      }
 }
 void send_response (struct traffic_context tcx, char *host, char *request, char *url, int type) {
      struct PKT newpacket;
      struct ethh *eh;
-     char *response_payload=malloc_or_die("Error allocating memory for a response payload\r\n",HEADER_DEPTH);
+     char *response_payload = malloc_or_die ("Error allocating memory for a response payload\r\n", HEADER_DEPTH);
      memset (response_payload, 0, HEADER_DEPTH);
-     int i = 0,  response_length, bytes;
+     int i = 0, response_length, bytes;
      uint8_t TCPHDR = sizeof (struct tcphdr);
      //fill_payload (response_payload, host, url, request, type);
-          xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
-                         "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
-          
+     xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
+              "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
+
      response_length = strlen (response_payload);
      //allocate memory,point the pointers...
      newpacket.ethernet_frame =
           malloc_or_die ("Error, allocating %i bytes failed in send_response", tcx.pkt->mtu, tcx.pkt->mtu);
      if (tcx.pkt->len <= (ETHIP4 + TCPHDR)) {
           debug (6, "Received an http packet with no payload");
-	  free_null(response_payload);
+          free_null (response_payload);
           return;
      }
      newpacket.data = (uint8_t *) newpacket.ethernet_frame + (ETHIP4 + TCPHDR);
@@ -265,49 +267,50 @@ void send_response (struct traffic_context tcx, char *host, char *request, char 
      memcpy (newpacket.data, response_payload, response_length);
      newpacket.ipheader = (struct iphdr *) (newpacket.ethernet_frame + ETH_HDRLEN);
      newpacket.tcpheader = (struct tcphdr *) (newpacket.ethernet_frame + ETHIP4);
-  //TCP:
-  newpacket.tcpheader->window = tcx.pkt->tcpheader->window; //don't really care about window sinc we don't care about the fate of this connection
-  newpacket.tcpheader->ack = 1;
-  newpacket.tcpheader->syn = 0;
-  newpacket.tcpheader->fin = 0;
-  newpacket.tcpheader->rst = 0;
-  newpacket.tcpheader->source = tcx.pkt->tcpheader->dest;
-  newpacket.tcpheader->dest = tcx.pkt->tcpheader->source;
-  newpacket.tcpheader->seq = tcx.pkt->tcpheader->ack_seq;
-  newpacket.tcpheader->ack_seq = htonl (tcx.pkt->datalen + ntohl (tcx.pkt->tcpheader->seq));    //our response needs to ack the request, we can do a separate ack
-  //which is what grack() was about,but it seems we don't really need it
+     //TCP:
+     newpacket.tcpheader->window = tcx.pkt->tcpheader->window;  //don't really care about window sinc we don't care about the fate of this connection
+     newpacket.tcpheader->ack = 1;
+     newpacket.tcpheader->syn = 0;
+     newpacket.tcpheader->fin = 0;
+     newpacket.tcpheader->rst = 0;
+     newpacket.tcpheader->source = tcx.pkt->tcpheader->dest;
+     newpacket.tcpheader->dest = tcx.pkt->tcpheader->source;
+     newpacket.tcpheader->seq = tcx.pkt->tcpheader->ack_seq;
+     newpacket.tcpheader->ack_seq = htonl (tcx.pkt->datalen + ntohl (tcx.pkt->tcpheader->seq)); //our response needs to ack the request, we can do a separate ack
+     //which is what grack() was about,but it seems we don't really need it
 
-  newpacket.tcpheader->doff = (TCPHDR / 4);     //our response will always be this size,so no need to calculate header length
+     newpacket.tcpheader->doff = (TCPHDR / 4);  //our response will always be this size,so no need to calculate header length
 
-  //IPv4:
-  memcpy (newpacket.ipheader, tcx.pkt->ipheader, IP4_HDRLEN);
-  newpacket.ipheader->daddr = tcx.pkt->ipheader->saddr;
-  newpacket.ipheader->saddr = tcx.pkt->ipheader->daddr;
-  newpacket.ipheader->tot_len = htons (IP4_HDRLEN + TCPHDR + response_length);
-  newpacket.ipheader->check = IPV4CalculateChecksum ((uint16_t *) newpacket.ipheader, IP4_HDRLEN);
+     //IPv4:
+     memcpy (newpacket.ipheader, tcx.pkt->ipheader, IP4_HDRLEN);
+     newpacket.ipheader->daddr = tcx.pkt->ipheader->saddr;
+     newpacket.ipheader->saddr = tcx.pkt->ipheader->daddr;
+     newpacket.ipheader->tot_len = htons (IP4_HDRLEN + TCPHDR + response_length);
+     newpacket.ipheader->check = IPV4CalculateChecksum ((uint16_t *) newpacket.ipheader, IP4_HDRLEN);
 
-  //ETHERNET:
-  eh = (struct ethh *) newpacket.ethernet_frame;
-  memcpy (newpacket.ethernet_frame, &tcx.pkt->ethernet_frame[6], 6);        //old src mac -> new dst mac
-  memcpy (&newpacket.ethernet_frame[6], tcx.pkt->ethernet_frame, 6);        //old dst mac -> new src mac
-  eh->ethtype = htons (ETH_P_IP);
+     //ETHERNET:
+     eh = (struct ethh *) newpacket.ethernet_frame;
+     memcpy (newpacket.ethernet_frame, &tcx.pkt->ethernet_frame[6], 6); //old src mac -> new dst mac
+     memcpy (&newpacket.ethernet_frame[6], tcx.pkt->ethernet_frame, 6); //old dst mac -> new src mac
+     eh->ethtype = htons (ETH_P_IP);
 
-  compute_tcp_checksum (newpacket.ipheader, (uint16_t *) newpacket.tcpheader);
+     compute_tcp_checksum (newpacket.ipheader, (uint16_t *) newpacket.tcpheader);
 
-     for (i=0; i < 3; i++) {      //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
+     for (i = 0; i < 3; i++) {  //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
           // in which case the 200/ok might make it fine and the redirect attempt fails.
-          bytes = write (tcx.fd_in,newpacket.ethernet_frame,response_length + (ETHIP4 + TCPHDR));/* (tcx.fd_in, newpacket.ethernet_frame,
-                          response_length + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &tcx.sll_in,
-                          sizeof (struct sockaddr_ll));*/
-	  if(bytes<(response_length+(ETHIP4+TCPHDR)))break;
+          bytes = write (tcx.fd_in, newpacket.ethernet_frame, response_length + (ETHIP4 + TCPHDR));     /* (tcx.fd_in, newpacket.ethernet_frame,
+                                                                                                           response_length + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &tcx.sll_in,
+                                                                                                           sizeof (struct sockaddr_ll)); */
+          if (bytes < (response_length + (ETHIP4 + TCPHDR)))
+               break;
      }
-     if (bytes ==(response_length+(ETHIP4+TCPHDR))) {
+     if (bytes == (response_length + (ETHIP4 + TCPHDR))) {
           newpacket.len = bytes;
           trace_dump ("301 redirect ", &newpacket);
      } else
           die (0, "Error sending 301");
      free_null (newpacket.ethernet_frame);
-     	  free_null(response_payload);
+     free_null (response_payload);
 
 }
 void kill_session (struct traffic_context tcx) {
@@ -315,7 +318,7 @@ void kill_session (struct traffic_context tcx) {
      struct ethh *eh;
      char response_payload[HEADER_DEPTH];
      memset (response_payload, 0, HEADER_DEPTH);
-     int i = 0,  response_length, bytes;
+     int i = 0, response_length, bytes;
      uint8_t TCPHDR = sizeof (struct tcphdr);
      xprintf (response_payload, 10, "");
      response_length = strlen (response_payload);
@@ -353,11 +356,11 @@ void kill_session (struct traffic_context tcx) {
      memcpy (&newpacket.ethernet_frame[6], tcx.pkt->ethernet_frame, 6); //old dst mac -> new src mac
      eh->ethtype = htons (ETH_P_IP);
      compute_tcp_checksum (newpacket.ipheader, (unsigned short *) newpacket.tcpheader);
-     for (i = 0; i < 3; i++) {       //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
+     for (i = 0; i < 3; i++) {  //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
           bytes = sendto (tcx.fd_in, newpacket.ethernet_frame,
                           response_length + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &tcx.sll_in,
                           sizeof (struct sockaddr_ll));
-        }
+     }
      if (bytes > 0) {
           newpacket.len = bytes;
           trace_dump ("client kill ", &newpacket);
@@ -402,15 +405,15 @@ void kill_session_server (struct traffic_context tcx) {
           //IPv4:
           memcpy (newpacket.ipheader, tcx.pkt->ipheader, IP4_HDRLEN);
           newpacket.ipheader->tot_len = htons (IP4_HDRLEN + TCPHDR + response_length);
-          newpacket.ipheader->check = IPV4CalculateChecksum ((unsigned short *) newpacket.ipheader, IP4_HDRLEN/4);
-	  die(5,"newpacket checksum set to %0x\r\n",newpacket.ipheader->check);
+          newpacket.ipheader->check = IPV4CalculateChecksum ((unsigned short *) newpacket.ipheader, IP4_HDRLEN / 4);
+          die (5, "newpacket checksum set to %0x\r\n", newpacket.ipheader->check);
           //ETHERNET:
           eh = (struct ethh *) newpacket.ethernet_frame;
           memcpy (newpacket.ethernet_frame, tcx.pkt->ethernet_frame, 12);
           eh->ethtype = htons (ETH_P_IP);
 
           compute_tcp_checksum (newpacket.ipheader, (unsigned short *) newpacket.tcpheader);
-          for (i=0; i < 3; i++) { //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
+          for (i = 0; i < 3; i++) {     //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
                bytes = sendto (tcx.fd_in, newpacket.ethernet_frame,
                                response_length + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &tcx.sll_in,
                                sizeof (struct sockaddr_ll));
@@ -431,10 +434,10 @@ int redirect_ok (char *host, char *url, char **redirect_url) {
      size_t reslen;
      while (!atomic_lock (&global.lookup_lock));
 
-     list_for_each (lh, &(global.RL.L)) {      //httpseverywhere compatible pcre rule lookup
+     list_for_each (lh, &(global.RL.L)) {       //httpseverywhere compatible pcre rule lookup
           rule = list_entry (lh, struct rules, L);
           if (rule != NULL) {
-               for (i = 0;  i < rule->target_count && i < MAX_REGEX ; i++) {
+               for (i = 0; i < rule->target_count && i < MAX_REGEX; i++) {
                     res = pcre_exec (rule->targets[i], 0, host, strlen (host), 0, 0, ovec, 256);
 
                     if (res < 0) {

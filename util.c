@@ -65,7 +65,7 @@ inline int isnull_ (char *s) {
 void xprintf (char *s, int max, char *format, ...) {
      va_list ap;
      va_start (ap, format);
-     if (isnull (s) )
+     if (isnull (s))
           die (1, "CRITICAL ERROR! attempted xprintf() received a null string or an empty format string\r\n");
 
      int ret = vsnprintf (s, max, format, ap);
@@ -150,7 +150,7 @@ int request_trim (char *s) {
      int i = 0, num;
 
      int len_r = strlen (global.redir_subd);
-     for (i=0; i < len &&  i < HEADER_DEPTH; i++) {
+     for (i = 0; i < len && i < HEADER_DEPTH; i++) {
           if (isspace (s[i]))
                continue;
           else
@@ -162,7 +162,7 @@ int request_trim (char *s) {
      len = strlen (s);
      if (len < (len_r + 2))
           return 0;
-     for (;  i < strlen (s) && i < HEADER_DEPTH; i++)
+     for (; i < strlen (s) && i < HEADER_DEPTH; i++)
           if (s[0] == '/')
                s = &s[i + 1];
      if (strlen (s) < (len_r + 2))
@@ -195,12 +195,12 @@ void *malloc_or_die (char *str, size_t sz, ...) {
      memset (ret, 0, sz);
      return (void *) ret;
 }
-void free_null(void *ptr){
- if (ptr!=NULL){
-   free(ptr);
-   ptr=NULL;
- }
-   
+void free_null (void *ptr) {
+     if (ptr != NULL) {
+          free (ptr);
+          ptr = NULL;
+     }
+
 }
 uint64_t rand_uint64_slow (void) {
      srand (time (NULL));
@@ -239,7 +239,7 @@ void signal_handler (int signal) {
      case 33:
           break;
      default:
-          cleanup();
+          cleanup ();
           die (1, "Houston We have a problem!!\n");
           return;
           break;
@@ -266,7 +266,7 @@ int parse_args (int argc, char **argv, struct global_settings *g) {
      char wl_path[256] = "";
      char bl_path[256] = "";
      char rl_path[256] = "";
-     memset(mode,0,32);
+     memset (mode, 0, 32);
      while ((c = getopt (argc, argv, ":hd:i:o:T:H:m:w:b:r:")) != -1) {
           switch (c) {
           case 'd':
@@ -326,24 +326,24 @@ int parse_args (int argc, char **argv, struct global_settings *g) {
             strncpy (global.interface_in, global.default_interface, IFNAMSIZ);
 
      if (strlen (mode) < 2)
-          global.mode=OL;
-     else{
-     if (strncmp (mode, "inline", 6) == 0 || strncmp (mode, "il", 2) == 0) {
-          global.mode = IL;
-          if (strlen (global.interface_out) < 2 || strlen (global.interface_in) < 2)
-                 die (1, "Invalid interfaces selected for inline mode of operation: In:%s Out:%s",
-                      global.interface_in, global.interface_out);
-
-          logg ("Inline mode of operation selected.");
-     } else if (strncmp (mode, "outofline", 9) == 0 || strncmp (mode, "ol", 2) == 0) {
           global.mode = OL;
-          if (strlen (global.interface_in) < 2)
-                 die (1, "Invalid input interface for out of line mode of operation: %s", global.interface_in);
+     else {
+          if (strncmp (mode, "inline", 6) == 0 || strncmp (mode, "il", 2) == 0) {
+               global.mode = IL;
+               if (strlen (global.interface_out) < 2 || strlen (global.interface_in) < 2)
+                      die (1, "Invalid interfaces selected for inline mode of operation: In:%s Out:%s",
+                           global.interface_in, global.interface_out);
 
-          logg ("Out of line mode of operation selected. We will only use black/white list based redirection.");
+               logg ("Inline mode of operation selected.");
+          } else if (strncmp (mode, "outofline", 9) == 0 || strncmp (mode, "ol", 2) == 0) {
+               global.mode = OL;
+               if (strlen (global.interface_in) < 2)
+                      die (1, "Invalid input interface for out of line mode of operation: %s", global.interface_in);
 
+               logg ("Out of line mode of operation selected. We will only use black/white list based redirection.");
+
+          }
      }
-}
      logg ("Input interface %s\r\nOutput interface %s\r\n", global.interface_in, global.interface_out);
 
      global.debug = debug;
@@ -385,7 +385,7 @@ int iscomment (char *s) {
      int i = 0, len = strlen (s);
 
      if (len > 0) {
-          for (i=0;  i < len && i < LINE_LEN ; i++) {
+          for (i = 0; i < len && i < LINE_LEN; i++) {
                if (!isblank (s[i])) {
                     if (s[i] == COMMENT_CHAR)
                          return 1;
@@ -399,7 +399,7 @@ int iscomment (char *s) {
 void host_to_url (int max, char *url, char *prefix, char *host, char *request) {
      if (max < 2 || url == NULL || prefix == NULL || host == NULL)
           return;
-     int hlen=0, plen=0, rlen=0;
+     int hlen = 0, plen = 0, rlen = 0;
      if (request == NULL || strlen (request) < 1)
           rlen = 0;
      else
@@ -410,7 +410,7 @@ void host_to_url (int max, char *url, char *prefix, char *host, char *request) {
 
      if (hlen < 1 || plen < 1)
           return;
-     memset(url,0,max);
+     memset (url, 0, max);
      if (rlen > 0) {
           debug (7, "Converting to https: %s + %s + %s\r\n", prefix, host, request);
 
@@ -455,8 +455,9 @@ void load_hostlist (FILE * f, int type) {
 
           if (len < 2 || iscomment (line))
                continue;
-          entry = malloc_or_die ("Failed to allocate entry memory while loading host list\r\n",sizeof (struct HDB));
-          cob = malloc_or_die ("Failed to allocate cache object memory while loading host list\r\n",sizeof (struct cache));
+          entry = malloc_or_die ("Failed to allocate entry memory while loading host list\r\n", sizeof (struct HDB));
+          cob = malloc_or_die ("Failed to allocate cache object memory while loading host list\r\n",
+                               sizeof (struct cache));
           if (entry == NULL || cob == NULL)
                die (1, "Failed to allocate memory while loading host list");
           line[len] = (line[len] == '\n' || line[len] == '\r') ? '\0' : line[len];
@@ -501,38 +502,38 @@ inline uint64_t string_to_hash (char *s) {
      if (s == NULL || s_len < 2)
           return 0;
 
-     crypto_auth ((unsigned char *) &hash,(const unsigned char *)  s, s_len, (const unsigned char *) &global.hashkey);
+     crypto_auth ((unsigned char *) &hash, (const unsigned char *) s, s_len, (const unsigned char *) &global.hashkey);
      return hash;
 }
-void cleanup(){
-  debug(5,"Exit cleanup started\r\n");
-      struct list_head *lh, *tmp;
-      struct cache *cob;
-      struct HDB *hdbe;
-      global.run=0;
-      ifdown(global.interface_in);
-      ifdown(global.interface_out);
-      list_for_each_safe (lh, tmp, &(global.CL.L)) {
- cob = list_entry (lh, struct cache, L);
-          if (cob != NULL ) {
-	    list_del(&(cob->L));
-	    free_null(cob);
-	  }
-	  
-      }
-        list_for_each_safe (lh, tmp, &(global.HL.L)) {
- hdbe = list_entry (lh, struct HDB, L);
-          if (hdbe != NULL ) {
-	    list_del(&(hdbe->L));
-	    free_null(hdbe);
-	  }
-	  
-      }
-      rule_purge();
-      for(;global.fdcount>0;global.fdcount--){
-	close(global.fdlist[global.fdcount]);
-      }
-   debug(5,"Exit cleanup finished\r\n");
+void cleanup () {
+     debug (5, "Exit cleanup started\r\n");
+     struct list_head *lh, *tmp;
+     struct cache *cob;
+     struct HDB *hdbe;
+     global.run = 0;
+     ifdown (global.interface_in);
+     ifdown (global.interface_out);
+     list_for_each_safe (lh, tmp, &(global.CL.L)) {
+          cob = list_entry (lh, struct cache, L);
+          if (cob != NULL) {
+               list_del (&(cob->L));
+               free_null (cob);
+          }
+
+     }
+     list_for_each_safe (lh, tmp, &(global.HL.L)) {
+          hdbe = list_entry (lh, struct HDB, L);
+          if (hdbe != NULL) {
+               list_del (&(hdbe->L));
+               free_null (hdbe);
+          }
+
+     }
+     rule_purge ();
+     for (; global.fdcount > 0; global.fdcount--) {
+          close (global.fdlist[global.fdcount]);
+     }
+     debug (5, "Exit cleanup finished\r\n");
 }
 void compute_tcp_checksum (struct iphdr *pIph, unsigned short *ipPayload) {
      register unsigned long sum = 0;
@@ -570,6 +571,7 @@ void compute_tcp_checksum (struct iphdr *pIph, unsigned short *ipPayload) {
      //set computation result
      tcphdrp->check = (unsigned short) sum;
 }
+
 /* do not use anything in this comment,moved down here pending removal --
  uint16_t ip_checksum(const void *buf, size_t hdr_len)
  {
@@ -619,7 +621,6 @@ void compute_tcp_checksum (struct iphdr *pIph, unsigned short *ipPayload) {
              : "memory");
          return ( uint16_t)sum;
  }
-
 
 inline unsigned short csum (unsigned short *buf, int nwords) {
      unsigned long sum;

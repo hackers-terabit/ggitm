@@ -22,8 +22,8 @@ void http_dump (struct PKT *httppacket);        // trace_dump does this better,l
  * applications,the host header is present,dnsmap is there as a placeholder in case figuring out the domain
  * by intercepting dns responses is needed.
 */
-int get_http_host (char * data, char *buf, int bufsz);
-inline int get_http_request (char * data, char *buf, int bufsz);
+int get_http_host (char *data, char *buf, int bufsz);
+inline int get_http_request (char *data, char *buf, int bufsz);
 inline struct cache *search_cache (uint64_t uhash);
 inline void add_cache (char *url, uint64_t match_hash, int response);
 inline void del_cache (uint64_t hash);

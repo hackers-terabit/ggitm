@@ -22,10 +22,6 @@
 #include "suricata/decode-ipv6.h"
 #include "suricata/decode-tcp.h"
 
-
-
-
-
 extern char *optarg;
 extern int optind, optopt;
 FILE *openfile (char *path);
@@ -42,9 +38,9 @@ void signal_handler (int sig);
 void compute_tcp_checksum (struct iphdr *pIph, unsigned short *ipPayload);
 void *malloc_or_die (char *str, size_t sz, ...);
 void xprintf (char *s, int max, char *format, ...);
-void cleanup();
+void cleanup ();
 void print_usage ();
-void free_null(void *ptr);
+void free_null (void *ptr);
 
 int parse_args (int argc, char **argv, struct global_settings *g);
 int request_trim (char *str);
@@ -55,10 +51,10 @@ inline uint64_t string_to_hash (char *s);
 inline int isnull_ (char *s);
 inline int isnull (char *s);
 inline int atomic_lock (int *L);
-inline int atomic_unlock (int *L) ;
+inline int atomic_unlock (int *L);
 int iscomment (char *s);
 /** the following exists in siphash24.c ,not making a .h file for just one function **/
-int crypto_auth (unsigned char *out, const unsigned char *in, unsigned long long inlen, const unsigned char *k) ;
+int crypto_auth (unsigned char *out, const unsigned char *in, unsigned long long inlen, const unsigned char *k);
 /*
  uint16_t ip_checksum(const void *buf, size_t hdr_len);
  inline uint16_t ip_fast_csum(const void *iph, unsigned int ihl);

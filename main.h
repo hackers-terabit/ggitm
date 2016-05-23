@@ -26,7 +26,6 @@ struct HDB {
      struct list_head L;
 };
 
-
 struct cache {
      int response;
      uint64_t match_url;
@@ -53,34 +52,32 @@ struct global_settings {
      char rulepath[256];
      int http_port;
      int https_port;
-     int failmode; //0 (default)= fail closed, 1= failopen
+     int failmode;              //0 (default)= fail closed, 1= failopen
      int mode;
-     
-      char *default_interface;
+
+     char *default_interface;
 //for now this is our curl UA:
-  char *UA;
-uint64_t hashkey;
+     char *UA;
+     uint64_t hashkey;
 
-struct HDB HL;                  //host list
-struct cache CL;
-int cache_lock, curl_lock;
+     struct HDB HL;             //host list
+     struct cache CL;
+     int cache_lock, curl_lock;
 
-int fdlist[FD_MAX];
-int fdcount;
-
+     int fdlist[FD_MAX];
+     int fdcount;
 
 //yeah this seems a bit messy...
      pthread_t capture_handle[TMAX], copy_handle[TMAX];
      int tcount;
 
-     struct rules RL;                //rule list
- char delimiter ;    //why not,hope nobody uses ` in their url :P
-int lookup_lock;
-  char *redir_subd ;
+     struct rules RL;           //rule list
+     char delimiter;            //why not,hope nobody uses ` in their url :P
+     int lookup_lock;
+     char *redir_subd;
 };
 
 struct global_settings global;
-
 
 void destroy_globals ();
 void init_globals ();

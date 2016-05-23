@@ -11,7 +11,7 @@ int main (int argc, char **argv) {
           die (1, "Error,no arguments provided!\r\n");
      }
 
-     for (i=0; i < 32; i++)
+     for (i = 0; i < 32; i++)
           signal (i, signal_handler);   //Setup signal handler
 
      parse_args (argc, argv, &global);
@@ -41,9 +41,9 @@ void init_globals () {
           load_rules (global.rulepath);
 
      }
-     global.failmode=1;
-     global.fdcount=0;
-     memset(global.fdlist,0,FD_MAX);
+     global.failmode = 1;
+     global.fdcount = 0;
+     memset (global.fdlist, 0, FD_MAX);
      global.delimiter = '`';
      global.default_interface = "eth0";
      global.UA = "Mozilla/5.0 (compatible; bluepacket/0.1a; +https://github.com/hackers-terabit/ggitm)";
@@ -55,5 +55,3 @@ void destroy_globals () {
      curl_global_cleanup ();
      ifdown (global.interface_in);
 }
-
-
