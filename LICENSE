@@ -4,6 +4,9 @@ With the exception of the following source code files which have their own licen
 you may use source code found under this project with either WTFPL or CC0 license.
 
 Files with a separate license and copyright notice:
+suricata/decode-tcp.h
+suricata/decode-ipv4.h
+suricata/decode-ipv6.h
 pcrs/pcrs.c
 pcrs/pcrs.h
 siphash24.c

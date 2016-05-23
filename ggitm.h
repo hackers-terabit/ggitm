@@ -13,11 +13,7 @@
 #include "list.h"
 #include "pcrs/pcrs.h"
 #include "main.h"
-
-struct request {
-     char url[2048];
-     char *host;
-};
+#include "macros.h"
 
 void http_dump (struct PKT *httppacket);        // trace_dump does this better,leaving it alone for now
 /*
@@ -26,10 +22,11 @@ void http_dump (struct PKT *httppacket);        // trace_dump does this better,l
  * applications,the host header is present,dnsmap is there as a placeholder in case figuring out the domain
  * by intercepting dns responses is needed.
 */
-int get_http_host (uint8_t * data, char *buf, int bufsz);
-inline int get_http_request (uint8_t * data, char *buf, int bufsz);
+int get_http_host (char * data, char *buf, int bufsz);
+inline int get_http_request (char * data, char *buf, int bufsz);
 inline struct cache *search_cache (uint64_t uhash);
 inline void add_cache (char *url, uint64_t match_hash, int response);
+inline void del_cache (uint64_t hash);
 
 int http_packet (struct traffic_context tcx);   //handler for all things http/global.http_port
 void send_response (struct traffic_context tcx, char *host, char *request, char *url, int type);        //send appropriate http response,301 atm
@@ -41,5 +38,5 @@ void curl_opts (CURL * curl, char *url);
 void rule_search (char *url, char *host);
 void kill_session_server (struct traffic_context tcx);
 void fill_payload (char *response_payload, char *host, char *url, char *request, int type);
-int lookup_lock;
+
 #endif

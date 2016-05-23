@@ -1,27 +1,31 @@
 
 #include "ggitm.h"
+#include "util.h"
+
 #define _GNU_SOURCE
 void http_dump (struct PKT *pkt) {
      int i = 0;
      printf ("\n--------------------------------------------\n");
 
-     for (i;  i < pkt->datalen ; i++) {
+     for (i=0;  i < pkt->datalen ; i++) {
           printf ("%c", pkt->data[i]);
      }
      printf ("\n--------------------------------------------\n");
 
 }
 
-inline int get_http_host (uint8_t * data, char *buf, int bufsz) {
-     char *tmp, *tmp2, c;
-     int n = 0, i = 0;
+inline int get_http_host (char * data, char *buf, int bufsz) {
+     char c;
+     int i = 0;
+     if(isnull(data) || isnull_(data))
+       return 0;
      char *s = strcasestr ((char *) data, "host:");
 
      if (s == NULL || (strlen (s) < 6))
           return 0;
      else {
           s = &s[6];
-          for (i; i < bufsz &&  i < HEADER_DEPTH; i++) {
+          for (i=0; i < bufsz &&  i < HEADER_DEPTH; i++) {
                c = s[i];
                if (c == ':' || c == '\r' || c == '\n' || c == '\0' || (!isprint (c)))
                     break;
@@ -36,9 +40,11 @@ inline int get_http_host (uint8_t * data, char *buf, int bufsz) {
      return 0;
 }
 
-inline int get_http_request (uint8_t * data, char *buf, int bufsz) {
-     char *tmp, *tmp2, c;
-     int n = 0, i = 0, o;
+inline int get_http_request (char  * data, char *buf, int bufsz) {
+     char c;
+     int  i = 0, o;
+       if(isnull(data) || isnull_(data))
+       return 0;
      char *get = strcasestr ((char *) data, "GET ");
      char *head = strcasestr ((char *) data, "HEAD ");
 
@@ -53,7 +59,7 @@ inline int get_http_request (uint8_t * data, char *buf, int bufsz) {
           o = 4;
 
      get = &get[o];
-     for (i;  i < bufsz - 1 && i < HEADER_DEPTH; i++) {
+     for (i=0;  i < bufsz - 1 && i < HEADER_DEPTH; i++) {
           c = get[i];
           if (c == ' ' || c == '\r' || c == '\n' || c == '\0' || (!isprint (c)))
                break;
@@ -70,28 +76,27 @@ inline struct cache *search_cache (uint64_t uhash) {
      struct list_head *lh, *tmp;
      struct cache *entry;
      debug (5, "Cache lookup for url hash %" PRIx64 "\r\n", uhash);
-     while (!atomic_lock (&cache_lock));
+     while (!atomic_lock (&global.cache_lock));
 
-     list_for_each_safe (lh, tmp, &(CL.L)) {
+     list_for_each_safe (lh, tmp, &(global.CL.L)) {
           entry = list_entry (lh, struct cache, L);
           if (entry != NULL) {
              //  debug (7, "%" PRIx64 " <-> %" PRIx64 "\r\n", uhash, entry->match_url);
                if (entry->match_url == uhash) {
-                    atomic_unlock (&cache_lock);
+                    atomic_unlock (&global.cache_lock);
                     return entry;
                }
           }
 
      }
-     atomic_unlock (&cache_lock);
+     atomic_unlock (&global.cache_lock);
 
      return NULL;
 }
 inline void add_cache (char *url, uint64_t match_hash, int response) {
 
-     struct cache *cob = malloc (sizeof (struct cache));
-     if (cob == NULL)
-          die (1, "malloc() failure when adding an entry to the global cache\r\n");
+     struct cache *cob = malloc_or_die ("malloc() failure when adding an entry to the global cache\r\n",sizeof (struct cache));
+
      int url_len;
      if (url != NULL)
           url_len = strlen (url);
@@ -104,32 +109,35 @@ inline void add_cache (char *url, uint64_t match_hash, int response) {
      else
           memset (cob->redirect_url, 0, URL_MAX);
 
-     while (!atomic_lock (&cache_lock));
+     while (!atomic_lock (&global.cache_lock));
 
-     list_add (&(cob->L), &(CL.L));
-     atomic_unlock (&cache_lock);
+     list_add (&(cob->L), &(global.CL.L));
+     atomic_unlock (&global.cache_lock);
 }
 inline void del_cache (uint64_t hash) {
-     struct list_head *lh, *tmp;
-     struct cache *entry;
+    // struct list_head *lh, *tmp;
+     struct cache *entry,*clh,*ctmp;
     // debug (7, "Deleting cache entries that match hash %" PRIx64 "\r\n", hash);
-     while (!atomic_lock (&cache_lock));
-
-     list_for_each_safe (lh, tmp, &(CL.L)) {
-          entry = list_entry (lh, struct cache, L);
+     while (!atomic_lock (&global.cache_lock));
+	if(list_empty(&(global.CL.L))){
+	       atomic_unlock (&global.cache_lock);
+         return;
+}
+     list_for_each_entry_safe (clh, ctmp, &(global.CL.L),L) {
+          entry = list_entry (clh, struct cache, L);
           if (entry != NULL) {
                if (entry->match_url == hash) {
                     list_del (&(entry->L));
-                    free (entry);
+                   if(entry!=NULL) free_null (entry);
                }
           }
      }
-     atomic_unlock (&cache_lock);
+     atomic_unlock (&global.cache_lock);
 
 }
 int http_packet (struct traffic_context tcx) {
      int hlen = tcx.pkt->datalen < HEADER_DEPTH ? tcx.pkt->datalen : HEADER_DEPTH - 1,
-          redirect_count = 0, state = REDIRECT_DENIED;
+           state = REDIRECT_DENIED;
      char host[hlen];
      char request[hlen];
      char assumed_url[hlen];
@@ -143,8 +151,7 @@ int http_packet (struct traffic_context tcx) {
      memset (assumed_url, 0, hlen);
      memset (url_https, 0, hlen);
 
-     if (get_http_host (tcx.pkt->data, host, hlen) && get_http_request (tcx.pkt->data, request, hlen)) {
-          //   redirect_count=request_trim(request);
+     if (get_http_host ((char *)tcx.pkt->data, host, hlen) && get_http_request ((char *)tcx.pkt->data, request, hlen)) {
           //this is to make it easier to read debug outputs for debug levels 5 and above
           debug (5, "\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\r\n");
           debug (4, "TCP seq: %x<>%x - HTTP host header found: --%s-- request |%s|\r\n",
@@ -164,12 +171,12 @@ int http_packet (struct traffic_context tcx) {
                if (cob->response == REDIRECT_RULE_FOUND) {
                     send_response (tcx, host, request, cob->redirect_url, 301);
                     kill_session (tcx);
-                    debug (4, "REDIRECT_CACHE_HIT  [1] for host %s , request=%s ; newurl=%s\n", host, request,
+                    debug (4, "REDIRECT_CACHE_HIT  [1] for host %s , request=%s ; newurl=%s; 301_REDIRECT_SENT\n", host, request,
                            cob->redirect_url);
                     return 0;
                } else if (cob->response == REDIRECT_DENIED) {
                     debug (4, "REDIRECT_CACHE_HIT [2] for host %s , request=%s ; REDIRECT_DENIED!\n", host, request);
-                    return 1;
+                    return global.failmode;
                } else if (cob->response == REDIRECT_BW_FOUND) {
                     send_response (tcx, host, request, url_https, 301);
                     kill_session (tcx);
@@ -184,12 +191,12 @@ int http_packet (struct traffic_context tcx) {
 
                          send_response (tcx, host, request, url_https, 301);
                          kill_session (tcx);
-                         debug (4, "REDIRECT_CACHE_HIT [4] for host %s ; newurl=%s\n", host, url_https);
+                         debug (4, "REDIRECT_CACHE_HIT [4] for host %s ; newurl=%s; 301_REDIRECT_SENT\n", host, url_https);
                          return 0;
                     } else {
                          debug (4, "REDIRECT_CACHE_HIT [5] for host %s ; newurl=%s ; REDIRECT_DENIED\n", host,
                                 url_https);
-                         return 1;
+                         return global.failmode;
                     }
                } else {         //REDIRECT_CACHE_MISS
                     debug (4, "REDIRECT_CACHE_MISS for just the host part of the request %s \r\n", host);
@@ -206,41 +213,41 @@ int http_packet (struct traffic_context tcx) {
                     add_cache (url_https, host_hash, state);
 
                }
-               return 0;
+               return global.failmode;
           }
 
      }
 
-     return 1;
+     return global.failmode;
 }
 void fill_payload (char *response_payload, char *host, char *url, char *request, int type) {
      //bah! a lot of this could probably be offloaded to a macro or something,we should use constant vars,etc...
      //PAYLOAD: print response  
      if (url == NULL) {
           if (type == 301)
-               snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
+               xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
           if (type == 302)
-               snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
+               xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
                          "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
      } else {
           if (type == 301)
-               snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
+               xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: %s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", url);
           if (type == 302)
-               snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
+               xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 302 Found\r\n"
                          "Location: %s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", url);
      }
 }
 void send_response (struct traffic_context tcx, char *host, char *request, char *url, int type) {
      struct PKT newpacket;
      struct ethh *eh;
-     char *response_payload=malloc(HEADER_DEPTH);
+     char *response_payload=malloc_or_die("Error allocating memory for a response payload\r\n",HEADER_DEPTH);
      memset (response_payload, 0, HEADER_DEPTH);
-     int i = 0, pktlen, response_length, bytes;
+     int i = 0,  response_length, bytes;
      uint8_t TCPHDR = sizeof (struct tcphdr);
      //fill_payload (response_payload, host, url, request, type);
-          snprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
+          xprintf (response_payload, HEADER_DEPTH - 1, "HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: https://%s/%s\r\n" "X-MITM-ATTACKER: Good-guy-in-the-middle\r\n", host, request);
           
      response_length = strlen (response_payload);
@@ -249,6 +256,7 @@ void send_response (struct traffic_context tcx, char *host, char *request, char 
           malloc_or_die ("Error, allocating %i bytes failed in send_response", tcx.pkt->mtu, tcx.pkt->mtu);
      if (tcx.pkt->len <= (ETHIP4 + TCPHDR)) {
           debug (6, "Received an http packet with no payload");
+	  free_null(response_payload);
           return;
      }
      newpacket.data = (uint8_t *) newpacket.ethernet_frame + (ETHIP4 + TCPHDR);
@@ -257,7 +265,6 @@ void send_response (struct traffic_context tcx, char *host, char *request, char 
      memcpy (newpacket.data, response_payload, response_length);
      newpacket.ipheader = (struct iphdr *) (newpacket.ethernet_frame + ETH_HDRLEN);
      newpacket.tcpheader = (struct tcphdr *) (newpacket.ethernet_frame + ETHIP4);
-    //  pktlen = ntohs(pkt->ipheader->tot_len) - (IP4_HDRLEN + sizeof (struct tcphdr)); //this will break if tcp/ip header length is non-default,needs to be fixed //TODO
   //TCP:
   newpacket.tcpheader->window = tcx.pkt->tcpheader->window; //don't really care about window sinc we don't care about the fate of this connection
   newpacket.tcpheader->ack = 1;
@@ -299,16 +306,18 @@ void send_response (struct traffic_context tcx, char *host, char *request, char 
           trace_dump ("301 redirect ", &newpacket);
      } else
           die (0, "Error sending 301");
-     free (newpacket.ethernet_frame);
+     free_null (newpacket.ethernet_frame);
+     	  free_null(response_payload);
+
 }
 void kill_session (struct traffic_context tcx) {
      struct PKT newpacket;
      struct ethh *eh;
      char response_payload[HEADER_DEPTH];
      memset (response_payload, 0, HEADER_DEPTH);
-     int i = 0, pktlen, response_length, bytes;
+     int i = 0,  response_length, bytes;
      uint8_t TCPHDR = sizeof (struct tcphdr);
-     snprintf (response_payload, 10, "");
+     xprintf (response_payload, 10, "");
      response_length = strlen (response_payload);
      newpacket.ethernet_frame =
           malloc_or_die ("Error, allocating %i bytes failed in kill_session", tcx.pkt->mtu, tcx.pkt->mtu);
@@ -323,7 +332,6 @@ void kill_session (struct traffic_context tcx) {
      memcpy (newpacket.data, response_payload, response_length);
      newpacket.ipheader = (struct iphdr *) (newpacket.ethernet_frame + ETH_HDRLEN);
      newpacket.tcpheader = (struct tcphdr *) (newpacket.ethernet_frame + ETHIP4);
-     //  pktlen = ntohs(tcx.pkt->ipheader->tot_len) - (IP4_HDRLEN + sizeof (struct tcphdr)); //this will break if tcp/ip header length is non-default,needs to be fixed //TODO
      //TCP:
      newpacket.tcpheader->window = tcx.pkt->tcpheader->window;  //don't really care about window sinc we don't care about the fate of this connection
      newpacket.tcpheader->ack = 1;
@@ -355,7 +363,7 @@ void kill_session (struct traffic_context tcx) {
           trace_dump ("client kill ", &newpacket);
      } else
           die (0, "\r\nError sending Client kill");
-     free (newpacket.ethernet_frame);
+     free_null (newpacket.ethernet_frame);
 }
 void kill_session_server (struct traffic_context tcx) {
      struct PKT newpacket;
@@ -363,9 +371,9 @@ void kill_session_server (struct traffic_context tcx) {
      char response_payload[HEADER_DEPTH];
      memset (response_payload, 0, HEADER_DEPTH);
 
-     int i = 0, pktlen, response_length, bytes;
+     int i = 0, response_length, bytes;
      uint8_t TCPHDR = sizeof (struct tcphdr);
-     snprintf (response_payload, 10, "");
+     xprintf (response_payload, 10, "");
      response_length = strlen (response_payload);
      //allocate memory,point the pointers...
      newpacket.ethernet_frame =
@@ -402,7 +410,7 @@ void kill_session_server (struct traffic_context tcx) {
           eh->ethtype = htons (ETH_P_IP);
 
           compute_tcp_checksum (newpacket.ipheader, (unsigned short *) newpacket.tcpheader);
-          for (i; i < 3; i++) { //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
+          for (i=0; i < 3; i++) { //not leaving it to chance , send the redirect 3 times in case the first is lost and a retransmit is needed
                bytes = sendto (tcx.fd_in, newpacket.ethernet_frame,
                                response_length + (ETHIP4 + TCPHDR), 0, (struct sockaddr *) &tcx.sll_in,
                                sizeof (struct sockaddr_ll));
@@ -413,7 +421,7 @@ void kill_session_server (struct traffic_context tcx) {
           } else
                die (0, "Error sending Server kill");
      }
-     free (newpacket.ethernet_frame);
+     free_null (newpacket.ethernet_frame);
 }
 
 int redirect_ok (char *host, char *url, char **redirect_url) {
@@ -421,9 +429,9 @@ int redirect_ok (char *host, char *url, char **redirect_url) {
      struct rules *rule;
      int res, i, ovec[256];
      size_t reslen;
-     while (!atomic_lock (&lookup_lock));
+     while (!atomic_lock (&global.lookup_lock));
 
-     list_for_each (lh, &(RL.L)) {      //httpseverywhere compatible pcre rule lookup
+     list_for_each (lh, &(global.RL.L)) {      //httpseverywhere compatible pcre rule lookup
           rule = list_entry (lh, struct rules, L);
           if (rule != NULL) {
                for (i = 0;  i < rule->target_count && i < MAX_REGEX ; i++) {
@@ -445,11 +453,11 @@ int redirect_ok (char *host, char *url, char **redirect_url) {
                          if (res < 1) {
 
                               debug (6, "Error matching host:%s , url:%s with pcrs\r\n", host, url);
-                              atomic_unlock (&lookup_lock);
+                              atomic_unlock (&global.lookup_lock);
 
                               return REDIRECT_DENIED;
                          } else if (res > 0) {
-                              atomic_unlock (&lookup_lock);
+                              atomic_unlock (&global.lookup_lock);
 
                               return REDIRECT_RULE_FOUND;
                          }
@@ -460,7 +468,7 @@ int redirect_ok (char *host, char *url, char **redirect_url) {
           }
      }
 
-     atomic_unlock (&lookup_lock);
+     atomic_unlock (&global.lookup_lock);
 
      return REDIRECT_DENIED;
 }
@@ -507,12 +515,12 @@ void curl_opts (CURL * curl, char *url) {
      curl_easy_setopt (curl, CURLOPT_TIMEOUT, 5L);
      curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 1L);
      curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, 2L);
-     curl_easy_setopt (curl, CURLOPT_USERAGENT, UA);
+     curl_easy_setopt (curl, CURLOPT_USERAGENT, global.UA);
      if (global.debug > 5)
           curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
 }
 void check_redirect (char *url, int *state) {
-     while (!atomic_lock (&curl_lock));
+     while (!atomic_lock (&global.curl_lock));
 
      //fwiw, I copy pasted the curlish parts of this from their examples page
      CURL *curl;
@@ -553,5 +561,5 @@ void check_redirect (char *url, int *state) {
      }
      curl_easy_cleanup (curl);
 
-     atomic_unlock (&curl_lock);
+     atomic_unlock (&global.curl_lock);
 }
