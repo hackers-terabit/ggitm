@@ -111,6 +111,7 @@ int init_af_packet (char *ifname, struct sockaddr_ll *sll) {
           if (setsockopt (fd, SOL_PACKET, PACKET_FANOUT, &fanout_arg, sizeof (fanout_arg)))
                die (0, "Error setting up AF_PACKET FANOUT\r\n");
 
+     
      }
      global.fdlist[++global.fdcount] = fd;
      return fd;
@@ -120,14 +121,16 @@ void start_loops () {
      for (global.tcount = 0; global.tcount < global.cpu_available && global.tcount < TMAX; global.tcount++) {
 
           if (global.mode == IL) {
-
-               if (pthread_create (&global.copy_handle[global.tcount], 0, copy_loop, (void *) NULL))
+       if (pthread_create (&global.copy_handle[global.tcount], 0, copy_loop, (void *) NULL))
                       die (1, "Error creating copy_loop threads");
+
           }
           if (pthread_create (&global.capture_handle[global.tcount], 0, capture_loop, (void *) NULL))
                  die (1, "Error creating copy_loop threads");
 
      }
+             
+		    
      pthread_join (global.capture_handle[0], NULL);
 
 }
@@ -139,9 +142,9 @@ void stop_loops () {
 void write_out (int fd, int len, struct traffic_context tcx) {
      int bytes;
      if (global.mode == IL) {
-//       bytes = sendto (fd, tcx.pkt->ethernet_frame,
-//                     len, 0, (struct sockaddr *) &tcx.sll_out, sizeof (struct sockaddr_ll));
-          bytes = write (fd, tcx.pkt->ethernet_frame, len);
+      bytes = sendto (fd, tcx.pkt->ethernet_frame,
+                    len, 0, (struct sockaddr *) &tcx.sll_out, sizeof (struct sockaddr_ll));
+       //  bytes = write (fd, tcx.pkt->ethernet_frame, len);
           if (bytes < tcx.pkt->len) {
                die (0, "Error write_out copying packet to egress interface, original size %i sendto transimtted %i\r\n",
                     tcx.pkt->len, bytes);
@@ -208,7 +211,23 @@ void init_traffic_context (struct traffic_context *tcx) {
           if (tcx->fd_out < 1)
                die (1, "Error initiating af_packet socket!.");
      }
+           get_interface (global.interface_in, &ifr, IFMAC);
 
+     if (ifr.ifr_hwaddr.sa_family!=ARPHRD_ETHER) 
+    die(1,"%s is not an ethernet interface.\r\n",global.interface_in);
+
+       memcpy(tcx->mac_in.src,ifr.ifr_hwaddr.sa_data,6);
+
+	  if(global.mode==IL){
+	             get_interface (global.interface_out, &ifr, IFMAC);
+
+         if (ifr.ifr_hwaddr.sa_family!=ARPHRD_ETHER) 
+    die(1,"%s is not an ethernet interface.\r\n",global.interface_in);
+
+       memcpy(tcx->mac_out.src,ifr.ifr_hwaddr.sa_data,6);
+
+     }
+	  
      get_interface (global.interface_in, &ifr, IFMTU);
      tcx->pkt->mtu = ifr.ifr_mtu;
      tcx->pkt->ethernet_frame =
@@ -234,11 +253,13 @@ void *capture_loop (void *arg) {
           poll (&pfd, 1, -1);
           if (pfd.revents & POLLIN)
                tcx.pkt->len = read (pfd.fd, tcx.pkt->ethernet_frame, tcx.pkt->mtu);
-          ;
+          
 
           if (tcx.pkt->len < ETHIP4 + sizeof (struct udphdr)) { //discard invalid packets
                debug (7, "Error in receiving frame,packet too short - size %i fd:%i\n", tcx.pkt->len, pfd.fd);
                write_out (tcx.fd_out, tcx.pkt->len, tcx);
+	       debug(6,"<");
+
                continue;
           } else {
                if (tcx.pkt->ipheader->protocol == 0x11) {       //UDP
@@ -269,9 +290,12 @@ void *capture_loop (void *arg) {
                          write_out (tcx.fd_out, tcx.pkt->len, tcx);
                          continue;
                     }
-               }
+               }else{
                write_out (tcx.fd_out, tcx.pkt->len, tcx);
+	       debug(6," < ");
+
                continue;
+	       }
           }
      }
      free_null (tcx.pkt);
@@ -281,35 +305,46 @@ void *capture_loop (void *arg) {
 }
 void *copy_loop (void *arg) {
      struct ifreq ifr;
-     //int bytes, bytes2;
-     int mtu;
+     int mtu,bytes;
      struct pollfd pfd;
-
      struct traffic_context tcx;
      init_traffic_context (&tcx);
      get_interface (global.interface_in, &ifr, IFMTU);
      mtu = ifr.ifr_mtu < 64 ? 1500 : ifr.ifr_mtu;
+          struct ethh *eh = (struct ethh *) tcx.pkt->ethernet_frame;
 
      pfd.fd = tcx.fd_out;
      pfd.events = POLLIN;
-
+debug(6,"copy_loop in fd:%i out fd:%i\r\n",tcx.fd_in,tcx.fd_out);
      while (global.run) {
-          memset (tcx.pkt->ethernet_frame, 0, tcx.pkt->mtu);
+          memset (tcx.pkt->ethernet_frame, 0, mtu);
 
-          poll (&pfd, 1, -1);
+//           poll (&pfd, 1, -1);
+// 
+//           if (pfd.revents & POLLIN)
+	  
+               tcx.pkt->len = read (tcx.fd_out, tcx.pkt->ethernet_frame, mtu);
+	      debug(6,">");
 
-          if (pfd.revents & POLLIN)
-               tcx.pkt->len = read (pfd.fd, tcx.pkt->ethernet_frame, mtu);
+               trace_dump ("copy_loop()", tcx.pkt);
 
-          if (tcx.pkt->len < ETH_HDRLEN)
+          if (tcx.pkt->len < 1){
                die (0, "Error reading packets in copy_loop\r\n");
+	       continue;
+	       
+	  }else if(memcmp(tcx.mac_in.src,eh->src,6)==0 ||  /* ethernt bound to a local interface, "split horizon" effect */
+	           memcmp(tcx.mac_in.src,eh->dst,6)==0 ||
+	           memcmp(tcx.mac_out.src,eh->src,6)==0 || 
+	           memcmp(tcx.mac_out.src,eh->dst,6)==0 
+	  ){
+	    debug(6,"!");
+	  }
           else {
-               write_out (tcx.fd_in, tcx.pkt->len, tcx);
-//       bytes2 = sendto (tcx.fd_in, tcx.pkt->ethernet_frame, bytes, 0, (struct sockaddr *) &tcx.sll_in, sizeof (struct sockaddr_ll));
-//       if (tcx.pkt->len != bytes)
-//         die (0, "Packet retransmission error in copy_loop in:%i out:%i \r\n", tcx.pkt->len, bytes);
-//                trace_dump ("copy_loop()", tcx.pkt);
-
+	    
+//                write_out (tcx.fd_in, tcx.pkt->len, tcx);
+      bytes = sendto (tcx.fd_in, tcx.pkt->ethernet_frame, tcx.pkt->len, 0, (struct sockaddr *) &tcx.sll_in, sizeof (struct sockaddr_ll));
+      if (tcx.pkt->len != bytes)
+        die (0, "Packet retransmission error in copy_loop in:%i out:%i \r\n", tcx.pkt->len, bytes);
           }
      }
      pthread_exit (NULL);

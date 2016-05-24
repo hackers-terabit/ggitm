@@ -106,22 +106,7 @@ struct tcphdr {
 };
  */
 
-struct ethh {
-     uint8_t dst[6];
-     uint8_t src[6];
-     uint16_t ethtype;
 
-};
-struct PKT {
-     uint8_t *ethernet_frame;
-     struct iphdr *ipheader;
-     struct udphdr *udpheader;
-     struct tcphdr *tcpheader;
-     uint8_t *data;
-     uint16_t mtu;
-     uint32_t len;
-     uint32_t datalen;
-};
 void trace_dump (char *msg, struct PKT *packet);
 
 #endif

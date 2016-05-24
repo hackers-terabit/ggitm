@@ -141,11 +141,14 @@ int load_xml_ruleset (xmlTextReaderPtr reader, struct rules *rule) {    // this 
                     if (strlen (to) < 1 || strlen (from) < 1)
                          return 1;      //found  a rule entry but no accompanying from/to attributes
                     else {
+		      global.delimiter='`';
+		     
                          xprintf (regex, 4096, "s%c%s%c%s%cg", global.delimiter, from, global.delimiter, to,
                                   global.delimiter);
+			 
                          rule->job = pcrs_compile_command (regex, &err);
                          if (rule->job == NULL) {
-                              die (0, "Error compiling pcrs regex %s\r\n", regex);
+                              die (0, "Error compiling pcrs regex |%s|\r\n", regex);
                               return 1;
                          }
                     }

@@ -13,10 +13,28 @@
 #include "list.h"
 #include "pcrs/pcrs.h"
 #include "macros.h"
+
+struct ethh {
+     uint8_t dst[6];
+     uint8_t src[6];
+     uint16_t ethtype;
+
+};
+struct PKT {
+     uint8_t *ethernet_frame;
+     struct iphdr *ipheader;
+     struct udphdr *udpheader;
+     struct tcphdr *tcpheader;
+     uint8_t *data;
+     uint16_t mtu;
+     uint32_t len;
+     uint32_t datalen;
+};
 struct traffic_context {
      struct PKT *pkt;
      struct sockaddr_ll sll_in, sll_out;
      int fd_in, fd_out;
+     struct ethh mac_in,mac_out;
 };
 
 struct HDB {

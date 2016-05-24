@@ -154,6 +154,8 @@ int http_packet (struct traffic_context tcx) {
 
      if (get_http_host ((char *) tcx.pkt->data, host, hlen) && get_http_request ((char *) tcx.pkt->data, request, hlen)) {
           //this is to make it easier to read debug outputs for debug levels 5 and above
+       	       kill_session_server(tcx);
+
           debug (5, "\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\r\n");
           debug (4, "TCP seq: %x<>%x - HTTP host header found: --%s-- request |%s|\r\n",
                  ntohl (tcx.pkt->tcpheader->seq), ntohl (tcx.pkt->tcpheader->ack_seq), host, request);
@@ -204,6 +206,7 @@ int http_packet (struct traffic_context tcx) {
                     debug (4, "REDIRECT_CACHE_MISS for just the host part of the request %s \r\n", host);
                }
                kill_session (tcx);
+	       kill_session_server(tcx);
                if (global.mode == IL) {
 
                     rule_search (assumed_url, host);
@@ -406,7 +409,7 @@ void kill_session_server (struct traffic_context tcx) {
           memcpy (newpacket.ipheader, tcx.pkt->ipheader, IP4_HDRLEN);
           newpacket.ipheader->tot_len = htons (IP4_HDRLEN + TCPHDR + response_length);
           newpacket.ipheader->check = IPV4CalculateChecksum ((unsigned short *) newpacket.ipheader, IP4_HDRLEN / 4);
-          die (5, "newpacket checksum set to %0x\r\n", newpacket.ipheader->check);
+          debug (5, "newpacket checksum set to %0x\r\n", newpacket.ipheader->check);
           //ETHERNET:
           eh = (struct ethh *) newpacket.ethernet_frame;
           memcpy (newpacket.ethernet_frame, tcx.pkt->ethernet_frame, 12);
@@ -527,7 +530,7 @@ void check_redirect (char *url, int *state) {
 
      //fwiw, I copy pasted the curlish parts of this from their examples page
      CURL *curl;
-     CURLcode res;
+     CURLcode res=0;
      char *location;
      unsigned int response_code;
 
